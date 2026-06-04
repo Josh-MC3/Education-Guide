@@ -29,6 +29,128 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* =====================================================
+   GLOBAL TYPOGRAPHY SYSTEM
+   ===================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hero titles */
+.page-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1.1;
+}
+.page-hero h1 em { color: var(--gold); font-style: italic; }
+
+/* Section headers */
+.section-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.15;
+}
+
+/* Generic card headings */
+.card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--navy);
+}
+.card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--navy);
+}
+.card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--navy);
+}
+
+/* Navy cards — all headings in gold */
+.card-navy h2,
+.card-navy h3,
+.card-navy h4 { color: var(--gold); }
+
+/* Gold cards — all headings in navy */
+.card-gold h2,
+.card-gold h3,
+.card-gold h4 { color: var(--navy); }
+
+/* Course cards */
+.course-info h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+
+/* Timeline headings */
+.timeline-item h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+
+/* Tip headings */
+.tip-item h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+
+/* Subsection title (standalone h3 outside cards) */
+.subsection-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 20px;
+}
+
+/* GI Bill highlight headings */
+.gi-highlight h2 {
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+/* Safety net — enforce Playfair on all content titles */
+.card h2,
+.card h3,
+.card h4,
+.course-info h4,
+.tip-item h4,
+.timeline-item h4 {
+  font-family: 'Playfair Display', serif !important;
+}
+
+
+
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--cream);
@@ -138,15 +260,6 @@ body {
   border-radius: 20px;
   margin-bottom: 20px;
 }
-.page-hero h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
-  font-weight: 900;
-  color: var(--navy);
-  line-height: 1.1;
-  margin-bottom: 16px;
-}
-.page-hero h1 em { color: var(--gold); font-style: italic; }
 .page-hero p {
   font-size: 1.05rem;
   color: var(--text-muted);
@@ -171,20 +284,7 @@ body {
   background: var(--navy);
   color: var(--white);
 }
-.card-navy h3 { color: var(--gold); }
 .card-navy p, .card-navy li { color: rgba(255,255,255,0.82); }
-.card h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  margin-bottom: 14px;
-  color: var(--navy);
-}
-.card h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.15rem;
-  margin-bottom: 10px;
-  color: var(--navy-mid);
-}
 .card p { line-height: 1.7; color: var(--text-muted); font-size: 0.95rem; }
 
 /* ===== GRID ===== */
@@ -297,11 +397,6 @@ ul.styled-list li::before {
   gap: 14px;
   margin: 40px 0 20px;
 }
-.section-header h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.6rem;
-  color: var(--navy);
-}
 .section-line {
   flex: 1;
   height: 1px;
@@ -393,7 +488,6 @@ ul.styled-list li::before {
   font-weight: 500;
   flex-shrink: 0;
 }
-.course-info h4 { font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
 .course-info p { font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; }
 
 /* Abroad cards */
@@ -428,7 +522,6 @@ ul.styled-list li::before {
   font-size: 1.1rem;
   flex-shrink: 0;
 }
-.tip-item h4 { font-size: 0.9rem; font-weight: 600; color: var(--navy); margin-bottom: 3px; }
 .tip-item p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
 
 /* Military timeline */
@@ -454,7 +547,6 @@ ul.styled-list li::before {
   border: 2px solid var(--cream);
   box-shadow: 0 0 0 3px rgba(201,168,76,0.3);
 }
-.timeline-item h4 { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
 .timeline-item p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
 
 /* GI Bill highlight */
@@ -476,12 +568,6 @@ ul.styled-list li::before {
   font-weight: 900;
   color: rgba(201,168,76,0.07);
   pointer-events: none;
-}
-.gi-highlight h2 {
-  font-family: 'Playfair Display', serif;
-  color: var(--gold);
-  font-size: 1.8rem;
-  margin-bottom: 12px;
 }
 .gi-highlight p { color: rgba(255,255,255,0.8); line-height: 1.75; font-size: 0.94rem; }
 
@@ -1059,7 +1145,7 @@ ul.styled-list li::before {
     <p>A gap year — intentionally taking time between high school (or a job) and college — is well-established in Europe and growing in the U.S. Studies suggest gap year students often perform better academically when they do enroll, and come in with clearer purpose. The key word is <strong style="color:var(--gold)">intentional</strong>: structured travel, volunteering, or working abroad is very different from aimlessly delaying.</p>
   </div>
 
-  <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:16px;color:var(--navy)">Budget Tips to Stretch Your Dollar Abroad</h3>
+  <h3 class="subsection-title">Budget Tips to Stretch Your Dollar Abroad</h3>
 
   <div class="card">
     <div class="tip-item">
