@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Education Compass</title>
+<script>
+  // Set theme before paint to avoid flash
+  (function() {
+    try {
+      var saved = localStorage.getItem('ec-theme');
+      if (saved) { document.documentElement.setAttribute('data-theme', saved); }
+      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -25,6 +37,44 @@
   --border: rgba(201,168,76,0.25);
   --shadow: 0 8px 32px rgba(13,27,42,0.12);
   --shadow-lg: 0 20px 60px rgba(13,27,42,0.18);
+
+  /* Surface tokens — these flip in dark mode */
+  --page-bg: var(--cream);
+  --surface: var(--white);
+  --surface-2: #faf7f0;
+  --ink: var(--text);
+  --ink-muted: var(--text-muted);
+  --card-border: rgba(0,0,0,0.07);
+  --hairline: rgba(0,0,0,0.05);
+  --table-stripe: rgba(250,247,240,0.7);
+  --tag-bg: rgba(201,168,76,0.1);
+}
+
+/* ===== DARK MODE ===== */
+html[data-theme="dark"] {
+  --page-bg: #0a1420;
+  --surface: #14202e;
+  --surface-2: #1a2836;
+  --ink: #e8ecf2;
+  --ink-muted: #9fb0c3;
+  --card-border: rgba(201,168,76,0.18);
+  --hairline: rgba(255,255,255,0.08);
+  --table-stripe: rgba(255,255,255,0.03);
+  --tag-bg: rgba(201,168,76,0.14);
+  /* Brighten gold slightly for contrast on dark surfaces */
+  --gold: #d9b860;
+  --gold-light: #f0d075;
+  /* Soften pure-navy cards so they don't vanish into the page */
+  --navy: #16263a;
+  --navy-mid: #1d3147;
+  /* Brighter accent colors for dark-bg legibility */
+  --green: #2ecc71;
+  --teal: #1abc9c;
+  --purple: #b07cd0;
+  --red: #e74c3c;
+  --orange: #f39c12;
+  --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.6);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -149,13 +199,42 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif !important;
 }
 
-
+/* ===== DARK MODE HEADING & TEXT LEGIBILITY OVERRIDES =====
+   In light mode, headings on white cards are navy. On a dark surface
+   that navy would vanish, so flip those headings to light ink.
+   Headings inside navy cards / gi-highlight stay gold (handled by
+   --gold token); gold cards keep their own override below. */
+html[data-theme="dark"] .card h2,
+html[data-theme="dark"] .card h3,
+html[data-theme="dark"] .card h4,
+html[data-theme="dark"] .course-info h4,
+html[data-theme="dark"] .tip-item h4,
+html[data-theme="dark"] .timeline-item h4,
+html[data-theme="dark"] .country-card h3,
+html[data-theme="dark"] .section-header h2,
+html[data-theme="dark"] .page-hero h1,
+html[data-theme="dark"] .subsection-title {
+  color: var(--ink);
+}
+/* Hero accent word stays gold */
+html[data-theme="dark"] .page-hero h1 em { color: var(--gold); }
+/* Navy cards: headings stay gold even though base .card rule is overridden */
+html[data-theme="dark"] .card-navy h2,
+html[data-theme="dark"] .card-navy h3,
+html[data-theme="dark"] .card-navy h4 { color: var(--gold); }
+/* Gold-accent cards: keep their light-ink heading in dark mode */
+html[data-theme="dark"] .card-gold h2,
+html[data-theme="dark"] .card-gold h3,
+html[data-theme="dark"] .card-gold h4 { color: var(--ink); }
+/* Inline-styled section headings that hardcode a bright accent stay as-is;
+   only the plain navy ones need help, covered above. */
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background: var(--cream);
-  color: var(--text);
+  background: var(--page-bg);
+  color: var(--ink);
   min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* ===== HEADER ===== */
@@ -177,14 +256,15 @@ body {
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 22px; font-weight: 900;
-  color: var(--navy);
+  color: #0d1b2a;
   font-family: 'Playfair Display', serif;
   flex-shrink: 0;
 }
+.header-titles { flex: 1; }
 .site-title {
   font-family: 'Playfair Display', serif;
   font-size: 1.6rem;
-  color: var(--white);
+  color: #ffffff;
   letter-spacing: 0.02em;
 }
 .site-subtitle {
@@ -193,6 +273,39 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-top: 2px;
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(201,168,76,0.4);
+  color: #ffffff;
+  padding: 9px 16px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background 0.25s, border-color 0.25s, transform 0.15s;
+}
+.theme-toggle:hover { background: rgba(201,168,76,0.18); border-color: var(--gold); }
+.theme-toggle:active { transform: scale(0.95); }
+.theme-toggle .theme-icon-sun { display: none; font-size: 1rem; }
+.theme-toggle .theme-icon-moon { display: inline; font-size: 1rem; }
+/* In dark mode, show the sun (the action is "switch to light") */
+html[data-theme="dark"] .theme-toggle .theme-icon-sun { display: inline; }
+html[data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
+@media(max-width:600px){
+  .theme-toggle .theme-label { display: none; }
+  .theme-toggle { padding: 9px 12px; }
+  .site-header { padding: 14px 16px; }
+  .site-title { font-size: 1.25rem; }
+  .site-subtitle { font-size: 0.65rem; }
 }
 
 /* ===== TAB NAV ===== */
@@ -254,7 +367,7 @@ body {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--gold);
-  background: rgba(201,168,76,0.1);
+  background: var(--tag-bg);
   border: 1px solid var(--border);
   padding: 6px 16px;
   border-radius: 20px;
@@ -262,7 +375,7 @@ body {
 }
 .page-hero p {
   font-size: 1.05rem;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   max-width: 640px;
   margin: 0 auto;
   line-height: 1.7;
@@ -270,22 +383,23 @@ body {
 
 /* ===== CARDS ===== */
 .card {
-  background: var(--white);
+  background: var(--surface);
   border-radius: 12px;
   padding: 32px;
-  border: 1px solid rgba(0,0,0,0.07);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow);
   margin-bottom: 24px;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 .card-gold {
   border-left: 4px solid var(--gold);
 }
 .card-navy {
   background: var(--navy);
-  color: var(--white);
+  color: #ffffff;
 }
-.card-navy p, .card-navy li { color: rgba(255,255,255,0.82); }
-.card p { line-height: 1.7; color: var(--text-muted); font-size: 0.95rem; }
+.card-navy p, .card-navy li { color: rgba(255,255,255,0.85); }
+.card p { line-height: 1.7; color: var(--ink-muted); font-size: 0.95rem; }
 
 /* ===== GRID ===== */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
@@ -303,10 +417,10 @@ ul.styled-list li {
   padding: 8px 0;
   padding-left: 24px;
   position: relative;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-size: 0.94rem;
   line-height: 1.6;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid var(--hairline);
 }
 ul.styled-list li:last-child { border-bottom: none; }
 ul.styled-list li::before {
@@ -334,12 +448,12 @@ ul.styled-list li::before {
 }
 .cost-table td {
   padding: 13px 16px;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
-  color: var(--text);
+  border-bottom: 1px solid var(--card-border);
+  color: var(--ink);
 }
-.cost-table tr:nth-child(even) td { background: rgba(250,247,240,0.7); }
-.cost-table tr:hover td { background: rgba(201,168,76,0.05); }
-.cost-table .cat { font-weight: 600; color: var(--navy-mid); }
+.cost-table tr:nth-child(even) td { background: var(--table-stripe); }
+.cost-table tr:hover td { background: rgba(201,168,76,0.08); }
+.cost-table .cat { font-weight: 600; color: var(--gold); }
 .cost-table .total-row td {
   font-weight: 700;
   background: var(--navy-mid) !important;
@@ -432,8 +546,8 @@ ul.styled-list li::before {
 .faq-q span { color: var(--gold); font-size: 1.2rem; transition: transform 0.3s; }
 .faq-q.open span { transform: rotate(45deg); }
 .faq-a {
-  background: var(--white);
-  border: 1px solid rgba(0,0,0,0.08);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
   border-top: none;
   border-radius: 0 0 8px 8px;
   padding: 0 22px;
@@ -442,7 +556,7 @@ ul.styled-list li::before {
   transition: max-height 0.4s ease, padding 0.3s;
 }
 .faq-a.open { max-height: 600px; padding: 20px 22px; }
-.faq-a p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 10px; }
+.faq-a p { font-size: 0.92rem; color: var(--ink-muted); line-height: 1.75; margin-bottom: 10px; }
 .faq-a p:last-child { margin-bottom: 0; }
 
 /* ===== PRO/CON ===== */
@@ -460,17 +574,22 @@ ul.styled-list li::before {
 }
 .pro-box h4 { color: var(--green); font-size: 0.9rem; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 12px; }
 .con-box h4 { color: var(--red); font-size: 0.9rem; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 12px; }
-.pro-box li, .con-box li { font-size: 0.9rem; color: var(--text); padding: 5px 0; padding-left: 18px; position: relative; list-style: none; }
+.pro-box li, .con-box li { font-size: 0.9rem; color: var(--ink); padding: 5px 0; padding-left: 18px; position: relative; list-style: none; }
 .pro-box li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
 .con-box li::before { content: '✗'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
 
+/* Myths vs Facts labels */
+.mf-label { font-weight: 700; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: .05em; }
+.mf-myth { color: var(--ink); }
+.mf-fact { color: var(--teal); }
+
 /* ===== COURSE CARDS ===== */
 .course-card {
-  background: var(--white);
+  background: var(--surface);
   border-radius: 10px;
   padding: 22px;
-  border: 1px solid rgba(0,0,0,0.07);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
   display: flex;
   gap: 16px;
   margin-bottom: 16px;
@@ -488,22 +607,22 @@ ul.styled-list li::before {
   font-weight: 500;
   flex-shrink: 0;
 }
-.course-info p { font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; }
+.course-info p { font-size: 0.86rem; color: var(--ink-muted); line-height: 1.6; }
 
 /* Abroad cards */
 .country-card {
-  background: var(--white);
+  background: var(--surface);
   border-radius: 10px;
   padding: 22px;
-  border: 1px solid rgba(0,0,0,0.07);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 .country-flag { font-size: 2.2rem; }
-.country-card h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--navy); }
-.country-card p { font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; }
+.country-card h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--ink); }
+.country-card p { font-size: 0.86rem; color: var(--ink-muted); line-height: 1.6; }
 
 /* Budget tips */
 .tip-item {
@@ -511,7 +630,7 @@ ul.styled-list li::before {
   gap: 14px;
   align-items: flex-start;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid var(--hairline);
 }
 .tip-item:last-child { border-bottom: none; }
 .tip-icon {
@@ -522,7 +641,7 @@ ul.styled-list li::before {
   font-size: 1.1rem;
   flex-shrink: 0;
 }
-.tip-item p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+.tip-item p { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.6; }
 
 /* Military timeline */
 .timeline { position: relative; padding-left: 30px; }
@@ -544,10 +663,10 @@ ul.styled-list li::before {
   width: 12px; height: 12px;
   background: var(--gold);
   border-radius: 50%;
-  border: 2px solid var(--cream);
+  border: 2px solid var(--page-bg);
   box-shadow: 0 0 0 3px rgba(201,168,76,0.3);
 }
-.timeline-item p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+.timeline-item p { font-size: 0.88rem; color: var(--ink-muted); line-height: 1.65; }
 
 /* GI Bill highlight */
 .gi-highlight {
@@ -571,6 +690,58 @@ ul.styled-list li::before {
 }
 .gi-highlight p { color: rgba(255,255,255,0.8); line-height: 1.75; font-size: 0.94rem; }
 
+/* ===== RESOURCES / FURTHER READING ===== */
+.resources {
+  margin-top: 36px;
+  border-top: 2px solid var(--border);
+  padding-top: 24px;
+}
+.resources-title {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.resources-sub { font-size: 0.85rem; color: var(--ink-muted); margin-bottom: 18px; }
+.res-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media(max-width:640px){ .res-grid { grid-template-columns: 1fr; } }
+.res-link {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+}
+.res-link:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-left-color: var(--gold-light); }
+.res-link .res-name { font-weight: 700; color: var(--ink); font-size: 0.92rem; display: block; margin-bottom: 3px; }
+.res-link .res-name::after { content: ' ↗'; color: var(--gold); font-size: 0.8rem; }
+.res-link .res-desc { font-size: 0.8rem; color: var(--ink-muted); line-height: 1.5; }
+
+/* ===== BOOTCAMP CARDS ===== */
+.bc-card {
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.bc-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.bc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.bc-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); }
+.bc-name a { color: var(--gold); text-decoration: none; }
+.bc-name a:hover { text-decoration: underline; }
+.bc-cost { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--gold); font-weight: 500; white-space: nowrap; }
+.bc-card p { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.65; margin-bottom: 10px; }
+.bc-stats { display: flex; flex-wrap: wrap; gap: 18px; margin: 12px 0; padding: 12px 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+.bc-stat { font-size: 0.8rem; color: var(--ink-muted); }
+.bc-stat strong { display: block; font-family: 'DM Mono', monospace; font-size: 1.05rem; color: var(--ink); font-weight: 500; }
+
 
 </style>
 </head>
@@ -578,10 +749,15 @@ ul.styled-list li::before {
 
 <header class="site-header">
   <div class="logo-mark">E</div>
-  <div>
+  <div class="header-titles">
     <div class="site-title">The Education Compass</div>
     <div class="site-subtitle">Your guide to navigating higher education</div>
   </div>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle light and dark mode">
+    <span class="theme-icon-sun">☀️</span>
+    <span class="theme-icon-moon">🌙</span>
+    <span class="theme-label">Dark</span>
+  </button>
 </header>
 
 <nav class="tab-nav">
@@ -591,6 +767,7 @@ ul.styled-list li::before {
   <button class="tab-btn" onclick="showTab('veteran')">🎖️ Veteran Options</button>
   <button class="tab-btn" onclick="showTab('abroad')">🌍 Opportunities Abroad</button>
   <button class="tab-btn" onclick="showTab('free')">📚 Free Courses</button>
+  <button class="tab-btn" onclick="showTab('bootcamps')">🚀 Bootcamps & Certs</button>
   <button class="tab-btn" onclick="showTab('discussion')">💬 A Discussion</button>
   <button class="tab-btn" onclick="showTab('quickcareers')">⚡ Quick Careers</button>
 </nav>
@@ -669,7 +846,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="card">
-    <p style="margin-bottom:18px;font-size:0.9rem;color:var(--text-muted)">The data and claims throughout this site draw from the following institutions. When you see a statistic here, one of these is behind it. Always verify current figures directly — education economics shift annually.</p>
+    <p style="margin-bottom:18px;font-size:0.9rem;color:var(--ink-muted)">The data and claims throughout this site draw from the following institutions. When you see a statistic here, one of these is behind it. Always verify current figures directly — education economics shift annually.</p>
     <div class="grid-2">
       <ul class="styled-list">
         <li><strong><a href="https://cew.georgetown.edu/" target="_blank" style="color:var(--gold)">Georgetown CEW</a></strong> — ROI by major, underemployment paradox, earnings premium data</li>
@@ -736,7 +913,7 @@ ul.styled-list li::before {
       </tbody>
     </table>
     </div>
-    <p style="margin-top:12px;font-size:0.82rem;color:var(--text-muted)">* Community college students often live off-campus; room & board reflects average off-campus living costs. Out-of-state tuition at public universities typically 2–3× the in-state rate.</p>
+    <p style="margin-top:12px;font-size:0.82rem;color:var(--ink-muted)">* Community college students often live off-campus; room & board reflects average off-campus living costs. Out-of-state tuition at public universities typically 2–3× the in-state rate.</p>
   </div>
 
   <div class="grid-2">
@@ -786,7 +963,7 @@ ul.styled-list li::before {
     <h2 style="color:var(--red)">⚠️ Only 42% of Students Graduate in 4 Years</h2>
     <p>This is one of the most underreported facts in higher education. According to the Education Data Initiative, only <strong>42% of bachelor's degree students</strong> actually finish within the expected 4 years. Extending to 6 years multiplies the average public in-state cost of attendance to over <strong>$229,000</strong> — a number that dramatically changes the debt math for many students who started with modest financial plans.</p>
     <br>
-    <p style="color:var(--text-muted)">Before enrolling anywhere, ask the school for its 4-year graduation rate, not just its 6-year rate. The difference is often dramatic. Community colleges with strong articulation agreements — because students transfer out at year 2 with direction — often outperform flagship universities on this metric.</p>
+    <p style="color:var(--ink-muted)">Before enrolling anywhere, ask the school for its 4-year graduation rate, not just its 6-year rate. The difference is often dramatic. Community colleges with strong articulation agreements — because students transfer out at year 2 with direction — often outperform flagship universities on this metric.</p>
     <br>
     <div>
       <span class="badge badge-red">Changing Majors = Added Semesters</span>
@@ -812,6 +989,50 @@ ul.styled-list li::before {
       <p>The same Brookings research highlights the hidden financial trap: even as net tuition moderates, the cost of <strong>campus housing and auxiliary fees continues to skyrocket</strong>. Room and board at 4-year schools has grown significantly faster than inflation over the past decade. Students who accept lower net tuition but take on expensive on-campus housing can end up with higher debt than the sticker price suggested.</p>
       <br>
       <p>Strategy: live off-campus or with family when possible. NCES data shows this one decision cuts the true cost of attendance from ~$27,100/yr to ~$15,700/yr — a <strong>$45,000+ savings</strong> over four years.</p>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2>Alternative Credit: Slash Your Gen-Ed Costs</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card card-navy" style="margin-bottom:24px">
+    <h2>You Can Earn Real Credit Outside a Classroom</h2>
+    <p>A large chunk of any bachelor's degree is general education — English composition, college algebra, intro psychology, history, humanities. These are the same everywhere, and you do <strong style="color:var(--gold)">not</strong> have to pay full university tuition to complete them. Three legitimate, accredited-friendly routes can knock out 20–40 credits at a fraction of the cost, then transfer into your degree.</p>
+  </div>
+
+  <div class="grid-3">
+    <div class="card card-gold">
+      <h3>Sophia Learning</h3>
+      <p>Self-paced, online, <strong>ACE-recommended</strong> general education courses on a flat monthly subscription (around $99/month). More than 80 courses covering English, math, science, and humanities. Sophia reports learners have transferred over 4.8M credits and saved more than $1.7B in tuition, completing gen-eds up to 77% faster than a traditional semester.</p>
+      <br>
+      <p style="font-size:0.85rem"><strong>Catch:</strong> Sophia isn't itself accredited (it offers individual courses, not degrees), and selective/Ivy schools generally won't take the credit. Always confirm with your target school's registrar first. Strong fit for online universities like SNHU, WGU, and Capella.</p>
+    </div>
+    <div class="card card-gold">
+      <h3>CLEP &amp; DSST Exams</h3>
+      <p>Test out of entire courses by passing a single standardized exam. Each exam costs roughly $90–$100 and earns about 3–12 credits. CLEP covers 30+ subjects; DSST adds upper-level options. Military members get the first attempt funded by DANTES; everyone else can use <strong>Modern States</strong> (modernstates.org) for free prep plus a fee voucher.</p>
+      <br>
+      <p style="font-size:0.85rem"><strong>Catch:</strong> Each school sets its own minimum passing score and caps how many exam credits it accepts. Confirm the policy before you study.</p>
+    </div>
+    <div class="card card-gold">
+      <h3>Community College Dual Path</h3>
+      <p>Take individual gen-ed courses at a community college (often $100–$200/credit hour) and transfer them in. With a statewide articulation agreement, these transfer cleanly and are accepted essentially everywhere — including most four-year public universities, unlike alternative-credit providers.</p>
+      <br>
+      <p style="font-size:0.85rem"><strong>Catch:</strong> Slower and pricier than Sophia or CLEP, but the most universally accepted of the three. The safest option if your destination school is picky.</p>
+    </div>
+  </div>
+
+  <div class="resources">
+    <div class="resources-title">📚 Continue Your Research</div>
+    <div class="resources-sub">Run the numbers yourself using these free, authoritative cost and aid tools.</div>
+    <div class="res-grid">
+      <a class="res-link" href="https://studentaid.gov/" target="_blank"><span class="res-name">Federal Student Aid (studentaid.gov)</span><span class="res-desc">The official source for the FAFSA, federal loans, grants, and repayment/forgiveness programs.</span></a>
+      <a class="res-link" href="https://collegescorecard.ed.gov/" target="_blank"><span class="res-name">U.S. College Scorecard</span><span class="res-desc">Compare any school's net price, graduation rate, average debt, and graduate earnings by major.</span></a>
+      <a class="res-link" href="https://nces.ed.gov/collegenavigator/" target="_blank"><span class="res-name">NCES College Navigator</span><span class="res-desc">Federal database of tuition, fees, net price, and financial aid for every U.S. institution.</span></a>
+      <a class="res-link" href="https://educationdata.org/" target="_blank"><span class="res-name">Education Data Initiative</span><span class="res-desc">Deep statistics on student debt, tuition inflation, ROI timelines, and graduation rates.</span></a>
+      <a class="res-link" href="https://research.collegeboard.org/trends/college-pricing" target="_blank"><span class="res-name">College Board — Trends in Pricing</span><span class="res-desc">Annual report on tuition, fees, and the real (net) price families actually pay.</span></a>
+      <a class="res-link" href="https://www.sophia.org/" target="_blank"><span class="res-name">Sophia Learning</span><span class="res-desc">ACE-recommended, low-cost online gen-ed courses designed to transfer into your degree.</span></a>
     </div>
   </div>
 </div>
@@ -868,12 +1089,14 @@ ul.styled-list li::before {
       <p>Your technical training school — whether it's AIT, A-school, Tech school, or MOS school — also earns ACE-recommended credits. An 11B infantry soldier might earn 20+ credits. IT, medical, or intelligence specialists can earn significantly more. Request your <strong>Joint Services Transcript (JST)</strong> at jst.doded.mil — it's the official record schools use.</p>
     </div>
     <div class="timeline-item">
-      <h4>📝 CLEP & DSST Exams</h4>
-      <p>College-Level Examination Program (CLEP) and DANTES Subject Standardized Tests (DSST) let you test out of college courses. <strong>Active duty members take these for FREE</strong> through DANTES funding. Pass a 90-minute exam and earn 3–12 college credits. Common subjects: English Composition, U.S. History, Psychology, Business Law, and dozens more. A motivated service member can knock out 30+ credits this way.</p>
+      <h4>📝 CLEP & DSST Exams (All Branches)</h4>
+      <p>College-Level Examination Program (CLEP) and DANTES Subject Standardized Tests (DSST) let you test out of college courses. DANTES funding covers <strong>every branch</strong> — Army, Navy, Air Force, Space Force, Marines, Coast Guard, plus Guard and Reserve components — as long as you hold a valid Common Access Card (CAC). It is not Navy-only. Your <strong>first attempt</strong> at each CLEP or DSST title is fully funded. Pass a 90-minute exam and earn roughly 3–12 college credits. Common subjects: English Composition, U.S. History, Psychology, Business Law, and dozens more. A motivated service member can knock out 30+ credits this way.</p>
+      <p style="margin-top:8px">If a particular exam or retake isn't DANTES-funded for your situation, <strong>Modern States</strong> (modernstates.org) offers free CLEP prep courses plus a voucher that covers the exam fee — a fully free path to credit open to anyone, military or civilian.</p>
     </div>
     <div class="timeline-item">
-      <h4>🏆 Military Schools & Certifications</h4>
-      <p>Professional Military Education (PME) courses, leadership schools (Warrior Leader Course, SNCO Academy, etc.), and military certifications (like CompTIA certs funded by the Air Force) all have ACE credit recommendations. Don't leave free credits on the table — submit your JST to every school you apply to.</p>
+      <h4>🏆 Military Schools, Leadership Courses & Rank Progression</h4>
+      <p>Here's something many service members miss: the <strong>Professional Military Education (PME) and leadership schools you complete on the way up in rank carry ACE credit recommendations</strong>. Promotion isn't just a pay raise — courses like the Army's Basic Leader Course (BLC), the Air Force's Airman Leadership School, NCO academies, and SNCO academies all appear on your Joint Services Transcript with recommended credits attached. So as you advance in rank, the required schooling quietly builds your transcript. Military certifications (such as CompTIA certs funded through service credentialing programs) add even more. Don't leave these credits on the table — submit your JST to every school you apply to.</p>
+      <p style="margin-top:8px"><em>Important nuance:</em> rank by itself doesn't automatically grant credit — it's the documented training and PME courses tied to advancement that ACE evaluates. The credit lives in the coursework, which higher rank reflects.</p>
     </div>
     <div class="timeline-item">
       <h4>🌐 MyCAA for Military Spouses</h4>
@@ -904,17 +1127,59 @@ ul.styled-list li::before {
     <h2>Smart Strategy for Active Duty</h2>
     <ul class="styled-list">
       <li>Enroll in classes online through a military-friendly school (Southern New Hampshire, American Military University, Excelsior, etc.) — many offer special military rates</li>
+      <li>Knock out general-education requirements cheaply through <strong>Sophia Learning</strong> (sophia.org) — self-paced, ACE-recommended online gen-ed courses on a flat monthly subscription. Pass them, then transfer the credit into your degree program</li>
       <li>Submit your JST immediately to get every credit recognized</li>
-      <li>Stack CLEP/DSST exams during slower operational tempos to reduce remaining credit requirements</li>
+      <li>Stack CLEP/DSST exams during slower operational tempos to reduce remaining credit requirements (use Modern States for any exam DANTES won't fund)</li>
       <li>Max out your $4,500/year TA — don't leave money behind</li>
       <li>Coordinate with your Education Center on base — they have free counselors</li>
       <li>Plan your SkillBridge program 6–12 months before your ETS/EAS date</li>
     </ul>
   </div>
-</div>
-</div>
 
-<!-- ===================== VETERAN ===================== -->
+  <div class="section-header">
+    <h2>Highly Military-Friendly Schools</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card card-navy" style="margin-bottom:24px">
+    <h2>What Makes a School "Military-Friendly"?</h2>
+    <p>The phrase gets overused, so look for substance: generous transfer credit for your JST, participation in the <strong style="color:var(--gold)">Yellow Ribbon Program</strong> and the VA's <strong style="color:var(--gold)">Principles of Excellence</strong>, dedicated military/veteran advising staff, flexible online and hybrid formats that survive a deployment or PCS, and reduced military tuition rates. The schools below are repeatedly recognized for delivering on all of these.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-left:4px solid var(--gold)">
+      <h3>University of Maryland Global Campus (UMGC)</h3>
+      <p>The standard-bearer. Founded to serve troops after World War II, UMGC has been ranked <strong>#1 "Best for Vets"</strong> among primarily online universities by Military Times for several consecutive years. It enrolls 55,000+ military-affiliated students, teaches at 175+ worldwide locations (including on-base and overseas), grants generous credit for military training, participates in Yellow Ribbon, and offers reduced military tuition where TA covers up to 100% of undergraduate costs.</p>
+      <p style="margin-top:8px"><a href="https://www.umgc.edu/military-and-veterans" target="_blank" style="color:var(--gold)">umgc.edu/military-and-veterans ↗</a></p>
+    </div>
+    <div class="card">
+      <h3>Other Strong Options</h3>
+      <ul class="styled-list">
+        <li><strong>Southern New Hampshire University (SNHU):</strong> Huge online catalog, generous transfer credit, dedicated military team</li>
+        <li><strong>American Military University (AMU/APUS):</strong> Built for the military community; affordable, fully online</li>
+        <li><strong>Excelsior University:</strong> Very transfer-friendly; designed for adult and military learners</li>
+        <li><strong>Arizona State University (ASU):</strong> Top-ranked online programs with strong veteran services</li>
+        <li><strong>Penn State World Campus:</strong> Respected name, Yellow Ribbon, robust military support</li>
+        <li><strong>Norwich University:</strong> The oldest private military college; strong veteran culture</li>
+        <li><strong>Community colleges:</strong> Often the best value — many waive fees and grant JST credit liberally</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="resources">
+    <div class="resources-title">📚 Continue Your Research</div>
+    <div class="resources-sub">Official sources for verifying benefits, credits, and school quality — go straight to the primary source.</div>
+    <div class="res-grid">
+      <a class="res-link" href="https://www.dantes.mil/" target="_blank"><span class="res-name">DANTES (Official)</span><span class="res-desc">The DoD's voluntary education portal — CLEP/DSST funding, counseling, and credentialing info for all branches.</span></a>
+      <a class="res-link" href="https://jst.doded.mil/" target="_blank"><span class="res-name">Joint Services Transcript</span><span class="res-desc">Request your official JST to see and send your ACE-recommended military credits to schools.</span></a>
+      <a class="res-link" href="https://www.dodmou.com/TADecide/" target="_blank"><span class="res-name">TA DECIDE</span><span class="res-desc">DoD's official tool to compare schools on cost, outcomes, and military-student support.</span></a>
+      <a class="res-link" href="https://skillbridge.osd.mil/" target="_blank"><span class="res-name">DoD SkillBridge (Official)</span><span class="res-desc">Browse approved SkillBridge internship and apprenticeship opportunities by industry and location.</span></a>
+      <a class="res-link" href="https://www.acenet.edu/Programs-Services/Pages/Credit-Transcripts/Military-Guide-Online.aspx" target="_blank"><span class="res-name">ACE Military Guide</span><span class="res-desc">Look up the credit recommendations for your specific MOS, schools, and PME courses.</span></a>
+      <a class="res-link" href="https://www.benefits.va.gov/gibill/" target="_blank"><span class="res-name">VA Education Benefits</span><span class="res-desc">Official GI Bill information, eligibility, and the benefits comparison tool.</span></a>
+    </div>
+  </div>
+</div>
+</div>
 <div id="veteran-panel" class="tab-panel">
 <div class="main-content">
   <div class="page-hero">
@@ -925,7 +1190,7 @@ ul.styled-list li::before {
 
   <div class="gi-highlight">
     <h2>The Post-9/11 GI Bill (Chapter 33)</h2>
-    <p>The most powerful education benefit in the United States. If you served at least 90 days of active duty after September 10, 2001, you likely qualify. At 36+ months of service: <strong style="color:var(--gold-light)">100% tuition and fees</strong> covered at any public school in your state, a monthly housing allowance, and a book stipend. For private schools, there's a national maximum cap (~$28,000+/yr) that still covers most institutions significantly.</p>
+    <p>The most powerful education benefit in the United States. If you served at least 90 days of active duty after September 10, 2001, you likely qualify. At 36+ months of service: <strong style="color:var(--gold-light)">100% tuition and fees</strong> covered at any public school in your state, a monthly housing allowance, and a book stipend. For private or foreign schools, there's a national cap — <strong>$29,920.95</strong> for the 2025–2026 academic year, rising to <strong>$30,908.34</strong> for 2026–2027 — that still covers most institutions substantially. For costs beyond the cap, the Yellow Ribbon Program (an agreement between participating schools and the VA) can cover much of the remaining difference.</p>
     <br>
     <div>
       <span class="badge badge-green">Tuition & Fees Paid</span>
@@ -943,12 +1208,14 @@ ul.styled-list li::before {
   <div class="grid-2">
     <div class="card card-gold">
       <h2>You Won't Go Broke Getting Educated</h2>
-      <p>Here's the part that surprises most veterans: the GI Bill doesn't just pay tuition — it pays <strong>you a housing allowance</strong> while you're in school. Under the Post-9/11 GI Bill, your BAH is calculated at the E-5 with dependents rate for the zip code of your school.</p>
+      <p>Here's the part that surprises most veterans: the GI Bill doesn't just pay tuition — it pays <strong>you a housing allowance</strong> while you're in school. Under the Post-9/11 GI Bill, this Monthly Housing Allowance (MHA) is calculated at the E-5-with-dependents BAH rate for the zip code of your school — <strong>regardless of your actual rank when you served or whether you have dependents</strong>.</p>
       <br>
       <p>In major cities, this can be <strong>$1,800–$3,500+/month</strong>. In lower cost-of-living areas, it may be $1,200–$1,800/month. Either way, many veterans come out of school <em>cash positive</em> each month after rent and food.</p>
+      <br>
+      <p style="font-size:0.85rem"><strong>Two things to know:</strong> Online-only enrollment pays roughly half the national average (about $1,169/month for 2025–2026), so taking at least one in-person class unlocks the full local rate. And MHA updates each <strong>August 1</strong>, not in January — so it lags the military's own BAH adjustments by part of a year.</p>
     </div>
     <div class="card">
-      <h2>BAH Rates by Location (E-5 w/Dep, Examples)</h2>
+      <h2>MHA Rates by Location (E-5 w/Dep, Examples)</h2>
       <ul class="styled-list">
         <li><strong>New York City / Manhattan:</strong> ~$3,600/mo</li>
         <li><strong>San Francisco / Bay Area:</strong> ~$3,900/mo</li>
@@ -957,7 +1224,8 @@ ul.styled-list li::before {
         <li><strong>Austin, TX:</strong> ~$2,100/mo</li>
         <li><strong>Columbus, OH:</strong> ~$1,500/mo</li>
         <li><strong>Fayetteville, NC:</strong> ~$1,350/mo</li>
-        <li style="font-size:0.82rem">Rates are updated annually; check the DoD BAH calculator for current figures</li>
+        <li><strong>Online-only (national half-rate):</strong> ~$1,169/mo</li>
+        <li style="font-size:0.82rem">Rates update every August 1 using the prior year's BAH tables; check the DoD BAH calculator for current figures</li>
       </ul>
     </div>
   </div>
@@ -1048,6 +1316,19 @@ ul.styled-list li::before {
       <div style="font-size:2rem;margin-bottom:8px">📋</div>
       <h3>State Veterans Benefits</h3>
       <p>Many states offer additional tuition waivers or discounts for veterans — completely separate from federal benefits. Texas, Florida, and Illinois have especially generous state programs.</p>
+    </div>
+  </div>
+
+  <div class="resources">
+    <div class="resources-title">📚 Continue Your Research</div>
+    <div class="resources-sub">Official VA tools and trusted veteran-education resources — always verify your specific benefit with the VA.</div>
+    <div class="res-grid">
+      <a class="res-link" href="https://www.va.gov/education/" target="_blank"><span class="res-name">VA Education &amp; Training (Official)</span><span class="res-desc">The authoritative source for GI Bill eligibility, applications, and all VA education benefits.</span></a>
+      <a class="res-link" href="https://www.va.gov/education/gi-bill-comparison-tool/" target="_blank"><span class="res-name">GI Bill Comparison Tool</span><span class="res-desc">Enter any school to see your estimated tuition coverage, housing allowance, and book stipend.</span></a>
+      <a class="res-link" href="https://www.travel.dod.mil/Allowances/Basic-Allowance-for-Housing/BAH-Rate-Lookup/" target="_blank"><span class="res-name">DoD BAH Rate Lookup</span><span class="res-desc">Calculate the E-5-with-dependents housing rate for your school's zip code.</span></a>
+      <a class="res-link" href="https://www.va.gov/education/about-gi-bill-benefits/post-9-11/yellow-ribbon-program/" target="_blank"><span class="res-name">Yellow Ribbon Program</span><span class="res-desc">Find schools that cover tuition costs beyond the GI Bill cap at private and out-of-state institutions.</span></a>
+      <a class="res-link" href="https://www.benefits.va.gov/vocrehab/" target="_blank"><span class="res-name">Veteran Readiness &amp; Employment (Ch. 31)</span><span class="res-desc">Official info on VR&amp;E benefits for veterans with service-connected disabilities.</span></a>
+      <a class="res-link" href="https://www.militaryonesource.mil/" target="_blank"><span class="res-name">Military OneSource</span><span class="res-desc">DoD's hub for education, transition, and family resources for service members and veterans.</span></a>
     </div>
   </div>
 </div>
@@ -1171,6 +1452,19 @@ ul.styled-list li::before {
     <div class="tip-item">
       <div class="tip-icon">💰</div>
       <div><h4>Save a Realistic Buffer Before You Go</h4><p>Target $8,000–$15,000 USD for a 6-month gap year depending on region. Don't drain your savings — keep 3 months of emergency funds at home. Consider remote freelancing or English teaching abroad (TEFL/TESOL certification opens doors) to extend your runway.</p></div>
+    </div>
+  </div>
+
+  <div class="resources">
+    <div class="resources-title">📚 Continue Your Research</div>
+    <div class="resources-sub">Plan studying, working, or traveling abroad with these established resources.</div>
+    <div class="res-grid">
+      <a class="res-link" href="https://www.study-in-germany.de/en/" target="_blank"><span class="res-name">DAAD — Study in Germany</span><span class="res-desc">The official portal for international students: tuition-free public universities, visas, and the blocked-account requirement.</span></a>
+      <a class="res-link" href="https://www.study.eu/" target="_blank"><span class="res-name">Study.eu</span><span class="res-desc">Compare tuition and English-taught degree programs across European countries.</span></a>
+      <a class="res-link" href="https://www.beyondthestates.com/" target="_blank"><span class="res-name">Beyond the States</span><span class="res-desc">Dedicated to helping Americans find affordable, English-taught bachelor's and master's degrees in Europe.</span></a>
+      <a class="res-link" href="https://travel.state.gov/content/travel/en/international-travel.html" target="_blank"><span class="res-name">U.S. State Dept. Travel</span><span class="res-desc">Official country information, visa requirements, safety advisories, and entry rules for U.S. citizens.</span></a>
+      <a class="res-link" href="https://www.workaway.info/" target="_blank"><span class="res-name">Workaway</span><span class="res-desc">Exchange a few hours of help daily for free room and board with hosts around the world.</span></a>
+      <a class="res-link" href="https://www.gooverseas.com/" target="_blank"><span class="res-name">Go Overseas</span><span class="res-desc">Reviews and guides for studying, teaching, volunteering, and interning abroad.</span></a>
     </div>
   </div>
 </div>
@@ -1346,6 +1640,19 @@ ul.styled-list li::before {
         <li><strong>SkillsUSA Prep Resources</strong> — Free career and technical education resources aligned with trade certifications</li>
         <li><strong>Electricity Forum / JADE Learning</strong> — Free NEC code prep and electrical theory; useful supplement before IBEW apprenticeship entrance exam</li>
       </ul>
+    </div>
+  </div>
+
+  <div class="resources">
+    <div class="resources-title">📚 Continue Your Research</div>
+    <div class="resources-sub">The best platforms for free, high-quality courses and recognized certificates.</div>
+    <div class="res-grid">
+      <a class="res-link" href="https://www.coursera.org/" target="_blank"><span class="res-name">Coursera</span><span class="res-desc">University and company courses (Google, IBM) — audit most for free; pay only for the certificate.</span></a>
+      <a class="res-link" href="https://www.edx.org/" target="_blank"><span class="res-name">edX</span><span class="res-desc">Harvard's CS50 and thousands of university courses, free to audit.</span></a>
+      <a class="res-link" href="https://www.khanacademy.org/" target="_blank"><span class="res-name">Khan Academy</span><span class="res-desc">Completely free K-12 through early-college math, science, and test prep.</span></a>
+      <a class="res-link" href="https://www.freecodecamp.org/" target="_blank"><span class="res-name">freeCodeCamp</span><span class="res-desc">Free, project-based coding curriculum with verifiable certifications.</span></a>
+      <a class="res-link" href="https://www.theodinproject.com/" target="_blank"><span class="res-name">The Odin Project</span><span class="res-desc">A free, full-stack web development curriculum respected by employers.</span></a>
+      <a class="res-link" href="https://www.classcentral.com/" target="_blank"><span class="res-name">Class Central</span><span class="res-desc">A searchable directory of free online courses from providers worldwide, with reviews.</span></a>
     </div>
   </div>
 </div>
@@ -1530,7 +1837,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="card">
-    <p style="margin-bottom:16px;color:var(--text-muted);font-size:0.92rem">Want to go deeper? These are the primary research institutions behind the data points in this discussion. Each offers free public access to their reports and tools.</p>
+    <p style="margin-bottom:16px;color:var(--ink-muted);font-size:0.92rem">Want to go deeper? These are the primary research institutions behind the data points in this discussion. Each offers free public access to their reports and tools.</p>
     <div class="grid-2">
       <ul class="styled-list">
         <li><strong><a href="https://cew.georgetown.edu/cew-reports/roi2025/" target="_blank" style="color:var(--gold)">Georgetown CEW — ROI Rankings 2025</a></strong> — Ranks 4,600 colleges by 10, 20, and 40-year return on investment</li>
@@ -1544,6 +1851,257 @@ ul.styled-list li::before {
       </ul>
     </div>
   </div>
+</div>
+</div>
+
+<!-- ===================== BOOTCAMPS & CERTS ===================== -->
+<div id="bootcamps-panel" class="tab-panel">
+<div class="main-content">
+
+  <div class="page-hero">
+    <span class="hero-tag">Accelerated Paths</span>
+    <h1>Bootcamps &amp; <em>Certification</em> Pathways</h1>
+    <p>For high-demand tech and skilled roles, an intensive bootcamp or industry certification can launch a career in months — not years. Here's how the most reputable programs work, what they cost, and how to avoid the duds.</p>
+  </div>
+
+  <div class="disclaimer" style="margin-bottom:28px">
+    <p><strong>⚠️ Read the fine print first:</strong> Bootcamps are unregulated and outcomes vary wildly. "Job placement rate" can mean very different things between schools — always look for outcomes verified by a third party like the <strong>Council on Integrity in Results Reporting (CIRR)</strong>, and read the definitions (placement "within 6 months," "in-field only," etc.). A bootcamp is a serious financial and time commitment, not a guaranteed job. The strongest signal is a deferred-tuition or money-back job guarantee, because it means the school only profits when you do.</p>
+  </div>
+
+  <div class="section-header">
+    <h2>How Tech Bootcamps Work</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card card-gold">
+      <h3>The Format</h3>
+      <p>Most full-time bootcamps run 12–24 weeks of intensive, project-based training. Part-time options stretch 24–48 weeks for those keeping a job. Curricula are updated frequently based on employer hiring data — far faster than a typical university course.</p>
+    </div>
+    <div class="card card-gold">
+      <h3>The Cost</h3>
+      <p>Premium immersive programs run roughly $13,000–$24,000. With an average first salary near $70,000 and many graduates recouping tuition within 3–5 months of employment, the payback can be faster than a 4-year degree — but only if you actually land the job.</p>
+    </div>
+    <div class="card card-gold">
+      <h3>Payment Models</h3>
+      <p>Watch for <strong>deferred tuition / ISAs</strong> (pay after you're hired above an income threshold), <strong>job guarantees</strong> (refund if you don't get placed), and standard upfront or financed tuition. Deferred and guaranteed models shift the risk onto the school.</p>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2>Reputable Coding &amp; Tech Bootcamps</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name"><a href="https://www.appacademy.io/" target="_blank">App Academy</a></div>
+      <div class="bc-cost">~$17,000 · deferred tuition option</div>
+    </div>
+    <p>Consistently ranked at or near the top for outcomes. A 16-week full-stack program (JavaScript, Python, React, Flask, SQL, algorithms) with a famously selective admissions process and a deferred-tuition model where you pay only after landing a qualifying job. Graduates regularly place at major tech companies.</p>
+    <div class="bc-stats">
+      <div class="bc-stat"><strong>~16 wks</strong> Full-time</div>
+      <div class="bc-stat"><strong>~85%+</strong> Reported placement</div>
+      <div class="bc-stat"><strong>Full-stack</strong> + Gen AI focus</div>
+    </div>
+    <span class="badge badge-green">Deferred Tuition</span>
+    <span class="badge badge-gold">Highly Selective</span>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name"><a href="https://www.hackreactor.com/" target="_blank">Hack Reactor (Galvanize)</a></div>
+      <div class="bc-cost">~$17,980</div>
+    </div>
+    <p>Widely regarded as one of the most technically rigorous coding bootcamps in the U.S. The 12-week immersive (also offered in longer formats) goes deep into advanced JavaScript, React, Node.js, PostgreSQL, and system design. Includes a technical interview for admission to keep cohort quality high.</p>
+    <div class="bc-stats">
+      <div class="bc-stat"><strong>12–36 wks</strong> Multiple formats</div>
+      <div class="bc-stat"><strong>Rigorous</strong> CS-heavy</div>
+      <div class="bc-stat"><strong>Online</strong> + some campuses</div>
+    </div>
+    <span class="badge badge-purple">Most Rigorous</span>
+    <span class="badge badge-blue">Job Support</span>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name"><a href="https://flatironschool.com/" target="_blank">Flatiron School</a></div>
+      <div class="bc-cost">~$16,900</div>
+    </div>
+    <p>Offers software engineering, data science, cybersecurity, and product design across full-time and self-paced formats. Known for strong career coaching and a published outcomes report. A good fit if you want a structured program with flexibility in pace.</p>
+    <div class="bc-stats">
+      <div class="bc-stat"><strong>15+ wks</strong> Flexible</div>
+      <div class="bc-stat"><strong>~86%</strong> Reported placement</div>
+      <div class="bc-stat"><strong>4 tracks</strong> Eng/Data/Cyber/Design</div>
+    </div>
+    <span class="badge badge-blue">Multiple Tracks</span>
+    <span class="badge badge-gold">Career Coaching</span>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name"><a href="https://www.springboard.com/" target="_blank">Springboard</a></div>
+      <div class="bc-cost">Varies · job guarantee</div>
+    </div>
+    <p>A mentorship-driven, online, self-paced model spanning software engineering, data science, cybersecurity, and UX design. Its signature feature is a job guarantee on eligible tracks — a tuition refund if you don't land a role within the defined window (read the conditions carefully).</p>
+    <div class="bc-stats">
+      <div class="bc-stat"><strong>Self-paced</strong> ~6–9 mo</div>
+      <div class="bc-stat"><strong>1:1</strong> Mentorship</div>
+      <div class="bc-stat"><strong>Job</strong> guarantee*</div>
+    </div>
+    <span class="badge badge-green">Job Guarantee*</span>
+    <span class="badge badge-blue">Mentor-Led</span>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name"><a href="https://generalassemb.ly/" target="_blank">General Assembly</a></div>
+      <div class="bc-cost">Varies by program</div>
+    </div>
+    <p>One of the largest and most established names, with immersive and part-time programs in software engineering, data, UX, and digital marketing. Strong employer-partnership network and flexible payment plans. A broad, well-known option with campuses in many cities plus online delivery.</p>
+    <div class="bc-stats">
+      <div class="bc-stat"><strong>12+ wks</strong> FT &amp; PT</div>
+      <div class="bc-stat"><strong>Broad</strong> Course catalog</div>
+      <div class="bc-stat"><strong>Global</strong> Campuses + online</div>
+    </div>
+    <span class="badge badge-gold">Well-Established</span>
+    <span class="badge badge-blue">Employer Network</span>
+  </div>
+
+  <div class="bc-card" style="border-left:3px solid var(--green)">
+    <div class="bc-head">
+      <div class="bc-name"><a href="https://www.codeplatoon.org/" target="_blank">Code Platoon</a> <span style="font-size:0.8rem;color:var(--green)">★ For Veterans</span></div>
+      <div class="bc-cost">GI Bill eligible</div>
+    </div>
+    <p>A nonprofit coding bootcamp built specifically for <strong>veterans, service members, and military spouses</strong>. Full-stack immersive training with scholarships and GI Bill acceptance. If you're transitioning out of the military and eyeing tech, this is purpose-built for your situation and community.</p>
+    <div class="bc-stats">
+      <div class="bc-stat"><strong>~15 wks</strong> Immersive</div>
+      <div class="bc-stat"><strong>Veterans</strong> Focused</div>
+      <div class="bc-stat"><strong>GI Bill</strong> Accepted</div>
+    </div>
+    <span class="badge badge-green">Nonprofit</span>
+    <span class="badge badge-purple">Military Community</span>
+    <span class="badge badge-gold">GI Bill Eligible</span>
+  </div>
+
+  <div class="section-header">
+    <h2>Industry Certifications (Self-Study, No Bootcamp Needed)</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card card-navy" style="margin-bottom:24px">
+    <h2>The Cheaper Alternative</h2>
+    <p>You don't always need a $17,000 bootcamp. For many tech and cloud roles, a self-studied industry certification — costing $100–$400 per exam — is enough to land an entry-level position. These stack well: start with a foundational cert, get hired, then let an employer fund the advanced ones.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Top Entry-Level Certs</h3>
+      <ul class="styled-list">
+        <li><strong>CompTIA A+:</strong> The IT support starting point — hardware, OS, troubleshooting</li>
+        <li><strong>CompTIA Network+ / Security+:</strong> Networking and the baseline security cert for many government/DoD roles</li>
+        <li><strong>Google IT Support / Data Analytics / Cybersecurity Certificates:</strong> Beginner-friendly, on Coursera, free to audit</li>
+        <li><strong>AWS Certified Cloud Practitioner:</strong> Entry cloud credential; gateway to high-demand cloud careers</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Higher-Value Certs to Grow Into</h3>
+      <ul class="styled-list">
+        <li><strong>AWS Solutions Architect Associate:</strong> One of the highest-ROI cloud certs</li>
+        <li><strong>Microsoft Azure Administrator (AZ-104):</strong> Strong in enterprise/government shops</li>
+        <li><strong>Cisco CCNA:</strong> The respected networking credential</li>
+        <li><strong>CISSP:</strong> Senior cybersecurity cert (requires experience) — commands six-figure salaries</li>
+        <li><strong>Certified Kubernetes Administrator (CKA):</strong> In-demand DevOps/cloud-native skill</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ ENGLISH TEACHING / TEFL ============ -->
+  <div class="section-header">
+    <h2>🌏 Teaching English Abroad (TEFL / TESOL)</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="gi-highlight" style="background:linear-gradient(135deg,#0d2e2a,#16403a)">
+    <h2 style="color:var(--gold-light)">Your Passport to Working Overseas</h2>
+    <p>A TEFL (Teaching English as a Foreign Language) certification is one of the fastest, most affordable ways to legally live and work abroad — popular with gap-year travelers, recent grads, and career changers alike. A 120-hour certification is the global baseline, opening doors to teaching jobs across Asia, Europe, Latin America, and the Middle East, plus the booming online English-teaching market. Salaries range from modest (Latin America, Southeast Asia) to genuinely lucrative with savings potential (South Korea, China, the Gulf states).</p>
+    <br>
+    <p style="font-size:0.88rem">The single most important factor when choosing a course is <strong style="color:var(--gold-light)">accreditation</strong>. The market is full of cheap, worthless certificates. Below are the credentials and accreditation bodies that employers actually recognize.</p>
+  </div>
+
+  <div class="section-header">
+    <h2>Top 5 TEFL Credentials &amp; Accreditations</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <p style="color:var(--ink-muted);font-size:0.9rem;margin-bottom:20px">The first two are specific gold-standard qualifications; the rest are the accreditation bodies to look for when choosing among the many online TEFL providers. A reputable 120-hour course will be backed by one of these.</p>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name">1. <a href="https://www.cambridgeenglish.org/teaching-english/teaching-qualifications/celta/" target="_blank">Cambridge CELTA</a></div>
+      <div class="bc-cost">Gold Standard · RQF Level 5</div>
+    </div>
+    <p>The most recognized brand name in English language teaching worldwide, administered by Cambridge University's assessment arm. Intensive, highly practical, and includes observed, assessed teaching practice with real students. Government-regulated at Level 5 on the UK's Regulated Qualifications Framework. The majority of serious TEFL employers specifically request CELTA or Trinity.</p>
+    <span class="badge badge-gold">Most Recognized</span>
+    <span class="badge badge-blue">Observed Teaching Practice</span>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name">2. <a href="https://www.trinitycollege.com/qualifications/teaching-english/CertTESOL" target="_blank">Trinity College London CertTESOL</a></div>
+      <div class="bc-cost">Gold Standard · RQF Level 5</div>
+    </div>
+    <p>The co-equal of CELTA, awarded by Trinity College London and also regulated at Level 5. Equally respected by employers, with the same emphasis on hands-on teaching practice and theory. Choosing between CELTA and Trinity usually comes down to which is offered near you — both are top-tier.</p>
+    <span class="badge badge-gold">Co-Gold Standard</span>
+    <span class="badge badge-blue">Ofqual Regulated</span>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name">3. <a href="https://www.accet.org/" target="_blank">ACCET</a></div>
+      <div class="bc-cost">U.S. Dept. of Education-recognized</div>
+    </div>
+    <p>The Accrediting Council for Continuing Education &amp; Training, founded in 1974 and recognized by the U.S. Department of Education. When an online or in-person TEFL provider is ACCET-accredited, it signals genuine, U.S.-recognized quality assurance — a strong mark to look for on American-based courses.</p>
+    <span class="badge badge-green">U.S. Recognized</span>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name">4. <a href="https://www.tquk.org/" target="_blank">TQUK (Training Qualifications UK)</a></div>
+      <div class="bc-cost">Ofqual-regulated awarding body</div>
+    </div>
+    <p>A UK awarding organization approved by Ofqual, the UK government's official qualifications regulator. Many reputable online "Level 5" TEFL diplomas are backed by TQUK. Note: a Level 5 rating reflects the academic level of the course, and is broadly comparable to (though not identical to) CELTA/Trinity — verify what the specific qualification includes.</p>
+    <span class="badge badge-blue">Ofqual-Regulated</span>
+  </div>
+
+  <div class="bc-card">
+    <div class="bc-head">
+      <div class="bc-name">5. <a href="https://www.iatquo.org/" target="_blank">IATQuO</a></div>
+      <div class="bc-cost">Specialist TEFL accreditor</div>
+    </div>
+    <p>The International Accreditation of TESOL Qualifying Organisations, established in 2004. It accredits only a small, carefully vetted set of TEFL courses and is well respected within the industry. Spotting IATQuO accreditation is a reliable sign a course meets independent quality standards.</p>
+    <span class="badge badge-purple">Respected &amp; Selective</span>
+  </div>
+
+  <div class="card" style="margin-top:8px">
+    <h3>Where to Take an Accredited Course</h3>
+    <p>Well-known providers offering accredited courses (verify the specific accreditation before paying) include <a href="https://www.internationalteflacademy.com/" target="_blank" style="color:var(--gold)">International TEFL Academy</a>, <a href="https://www.theteflacademy.com/" target="_blank" style="color:var(--gold)">The TEFL Academy</a>, and university-based CELTA/Trinity centers worldwide. For job hunting after certification, <a href="https://www.teachaway.com/" target="_blank" style="color:var(--gold)">Teach Away</a> and <a href="https://www.eslcafe.com/" target="_blank" style="color:var(--gold)">Dave's ESL Cafe</a> are long-standing job boards.</p>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="resources">
+    <div class="resources-title">📚 Continue Your Research</div>
+    <div class="resources-sub">Credible, independent sources for vetting bootcamps and TEFL programs before you commit.</div>
+    <div class="res-grid">
+      <a class="res-link" href="https://www.coursereport.com/" target="_blank"><span class="res-name">Course Report</span><span class="res-desc">Independent bootcamp reviews, outcomes data, and student feedback across hundreds of programs.</span></a>
+      <a class="res-link" href="https://cirr.org/" target="_blank"><span class="res-name">CIRR</span><span class="res-desc">The Council on Integrity in Results Reporting — standardized, audited bootcamp outcome statistics.</span></a>
+      <a class="res-link" href="https://www.switchup.org/" target="_blank"><span class="res-name">SwitchUp</span><span class="res-desc">Bootcamp rankings and verified reviews to compare cost, curriculum, and job outcomes.</span></a>
+      <a class="res-link" href="https://www.eslbase.com/tefl/" target="_blank"><span class="res-name">ESLbase</span><span class="res-desc">Trusted TEFL guidance, course comparisons, and clear explanations of accreditation.</span></a>
+      <a class="res-link" href="https://www.gooverseas.com/teach-abroad" target="_blank"><span class="res-name">Go Overseas — Teach Abroad</span><span class="res-desc">Country guides, program reviews, and salary expectations for teaching English worldwide.</span></a>
+      <a class="res-link" href="https://www.bls.gov/ooh/computer-and-information-technology/" target="_blank"><span class="res-name">BLS Occupational Outlook (Tech)</span><span class="res-desc">Official U.S. salary and job-growth data for computer and IT occupations.</span></a>
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -1626,7 +2184,7 @@ ul.styled-list li::before {
     <h2 style="color:var(--teal)">🔍 Myths vs. Facts: Real Estate</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px">
       <div>
-        <p style="font-weight:700;color:var(--navy);margin-bottom:6px;font-size:0.85rem;text-transform:uppercase;letter-spacing:.05em">❌ Myth</p>
+        <p class="mf-label mf-myth">❌ Myth</p>
         <ul class="styled-list">
           <li>"It's easy money — just show houses and collect checks"</li>
           <li>"You keep the whole commission"</li>
@@ -1636,7 +2194,7 @@ ul.styled-list li::before {
         </ul>
       </div>
       <div>
-        <p style="font-weight:700;color:var(--teal);margin-bottom:6px;font-size:0.85rem;text-transform:uppercase;letter-spacing:.05em">✅ Fact</p>
+        <p class="mf-label mf-fact">✅ Fact</p>
         <ul class="styled-list">
           <li>Top agents work 50–60 hrs/week, heavily invest in marketing, and treat it like a business</li>
           <li>Commission is split: agent/broker split is often 50/50 to 70/30 when starting out</li>
@@ -1716,7 +2274,7 @@ ul.styled-list li::before {
     <h2 style="color:var(--teal)">🔍 Myths vs. Facts: Stock Trading</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px">
       <div>
-        <p style="font-weight:700;color:var(--navy);margin-bottom:6px;font-size:0.85rem;text-transform:uppercase;letter-spacing:.05em">❌ Myth</p>
+        <p class="mf-label mf-myth">❌ Myth</p>
         <ul class="styled-list">
           <li>"Anyone can day trade full-time and replace their income quickly"</li>
           <li>"You need insider knowledge or a finance degree to succeed"</li>
@@ -1726,7 +2284,7 @@ ul.styled-list li::before {
         </ul>
       </div>
       <div>
-        <p style="font-weight:700;color:var(--teal);margin-bottom:6px;font-size:0.85rem;text-transform:uppercase;letter-spacing:.05em">✅ Fact</p>
+        <p class="mf-label mf-fact">✅ Fact</p>
         <ul class="styled-list">
           <li>70–80% of retail day traders lose money; replacing income takes most people 2–5 years of serious study</li>
           <li>Long-term index investing (no degree needed) outperforms most active professional fund managers over 10+ years</li>
@@ -1744,14 +2302,14 @@ ul.styled-list li::before {
     <div class="section-line"></div>
   </div>
 
-  <p style="color:var(--text-muted);font-size:0.92rem;margin-bottom:28px">Each of these careers can be entered with minimal prerequisites — most require weeks to months of training, not years. Salary figures reflect national medians; high-cost metro areas pay significantly more.</p>
+  <p style="color:var(--ink-muted);font-size:0.92rem;margin-bottom:28px">Each of these careers can be entered with minimal prerequisites — most require weeks to months of training, not years. Salary figures reflect national medians; high-cost metro areas pay significantly more.</p>
 
   <style>
   .job-card {
-    background: var(--white);
+    background: var(--surface);
     border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.07);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow);
     margin-bottom: 20px;
     overflow: hidden;
     transition: box-shadow 0.2s, transform 0.2s;
@@ -1769,7 +2327,7 @@ ul.styled-list li::before {
   .job-num {
     width: 36px; height: 36px;
     background: var(--gold);
-    color: var(--navy);
+    color: #0d1b2a;
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     font-family: 'DM Mono', monospace;
@@ -1789,17 +2347,17 @@ ul.styled-list li::before {
     overflow: hidden;
     transition: max-height 0.4s ease, padding 0.3s;
     padding: 0 24px;
-    background: var(--white);
+    background: var(--surface);
   }
   .job-body.open { max-height: 800px; padding: 20px 24px 24px; }
-  .job-body p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 14px; }
+  .job-body p { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.7; margin-bottom: 14px; }
   .job-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
   .req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
   @media(max-width:600px){ .req-grid { grid-template-columns: 1fr; } }
-  .req-box { background: var(--cream); border-radius: 8px; padding: 14px; }
+  .req-box { background: var(--surface-2); border-radius: 8px; padding: 14px; }
   .req-box h5 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: .07em; color: var(--gold); font-weight: 700; margin-bottom: 8px; }
   .req-box ul { list-style: none; }
-  .req-box ul li { font-size: 0.84rem; color: var(--text); padding: 4px 0; padding-left: 16px; position: relative; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .req-box ul li { font-size: 0.84rem; color: var(--ink); padding: 4px 0; padding-left: 16px; position: relative; border-bottom: 1px solid var(--hairline); }
   .req-box ul li:last-child { border-bottom: none; }
   .req-box ul li::before { content: '▸'; position: absolute; left: 0; color: var(--gold); }
   </style>
@@ -2515,6 +3073,19 @@ ul.styled-list li::before {
     <p>Every one of these jobs represents a genuine, sustainable income path — not a consolation prize for people who "didn't go to college." The tradespeople, healthcare workers, inspectors, and licensed professionals on this list are essential to how society functions. Many of them out-earn their college-educated counterparts by year 5. The best question to ask isn't <em>is this prestigious enough</em> — it's <em>does this path align with how I want to spend my days and what I want my life to look like?</em></p>
   </div>
 
+  <div class="resources">
+    <div class="resources-title">📚 Continue Your Research</div>
+    <div class="resources-sub">Verify salaries, job growth, and licensing requirements before committing to any path.</div>
+    <div class="res-grid">
+      <a class="res-link" href="https://www.bls.gov/ooh/" target="_blank"><span class="res-name">BLS Occupational Outlook Handbook</span><span class="res-desc">The authoritative U.S. source for median pay, job-growth projections, and entry requirements for every occupation.</span></a>
+      <a class="res-link" href="https://www.onetonline.org/" target="_blank"><span class="res-name">O*NET OnLine</span><span class="res-desc">Detailed profiles of skills, tasks, and outlook for hundreds of careers, plus interest assessments.</span></a>
+      <a class="res-link" href="https://www.careeronestop.org/" target="_blank"><span class="res-name">CareerOneStop</span><span class="res-desc">U.S. Dept. of Labor tool for training programs, certifications, licensing by state, and local salary data.</span></a>
+      <a class="res-link" href="https://www.apprenticeship.gov/" target="_blank"><span class="res-name">Apprenticeship.gov</span><span class="res-desc">Find registered, paid apprenticeships in the trades and beyond — earn while you learn.</span></a>
+      <a class="res-link" href="https://www.nar.realtor/" target="_blank"><span class="res-name">National Association of Realtors</span><span class="res-desc">Official source on real estate licensing, the path to becoming a Realtor, and industry data.</span></a>
+      <a class="res-link" href="https://www.finra.org/investors" target="_blank"><span class="res-name">FINRA — Investor Education</span><span class="res-desc">Unbiased information on investing, trading rules (including the PDT rule), and avoiding scams.</span></a>
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -2537,8 +3108,18 @@ function toggleJob(header) {
 function showTab(id) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id + '-panel').classList.add('active');
-  event.target.classList.add('active');
+  var panel = document.getElementById(id + '-panel');
+  if (panel) panel.classList.add('active');
+  // Use currentTarget so tapping an emoji inside the button still works;
+  // fall back to matching the button by its onclick target.
+  var btn = (event && event.currentTarget && event.currentTarget.classList.contains('tab-btn'))
+    ? event.currentTarget
+    : Array.prototype.find.call(document.querySelectorAll('.tab-btn'), function(b){
+        return b.getAttribute('onclick') && b.getAttribute('onclick').indexOf("'" + id + "'") !== -1;
+      });
+  if (btn) btn.classList.add('active');
+  // Scroll content area back to top on tab change
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ===== FAQ TOGGLE =====
@@ -2551,6 +3132,30 @@ function toggleFaq(el) {
   answer.classList.toggle('open');
   el.classList.toggle('open');
 }
+
+// ===== THEME TOGGLE (LIGHT / DARK) =====
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const label = document.querySelector('.theme-label');
+  if (label) label.textContent = (theme === 'dark') ? 'Light' : 'Dark';
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = (current === 'dark') ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('ec-theme', next); } catch (e) {}
+}
+(function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('ec-theme'); } catch (e) {}
+  if (saved) {
+    applyTheme(saved);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    applyTheme('dark');
+  } else {
+    applyTheme('light');
+  }
+})();
 </script>
 </body>
 </html>
