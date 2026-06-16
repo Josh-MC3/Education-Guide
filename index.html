@@ -309,17 +309,43 @@ html[data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
 }
 
 /* ===== TAB NAV ===== */
-.tab-nav {
-  background: var(--navy-mid);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
+.tab-nav-wrap {
   position: sticky;
   top: 81px;
   z-index: 99;
+  display: flex;
+  align-items: stretch;
+  background: var(--navy-mid);
+  border-bottom: 1px solid var(--border);
+}
+.tab-nav {
+  background: var(--navy-mid);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  flex: 1;
 }
 .tab-nav::-webkit-scrollbar { display: none; }
+.tab-scroll {
+  flex-shrink: 0;
+  width: 38px;
+  background: var(--navy-mid);
+  border: none;
+  color: var(--gold);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: none; /* shown via JS only when tabs overflow */
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, opacity 0.2s;
+}
+.tab-scroll:hover { background: rgba(201,168,76,0.15); }
+.tab-scroll:disabled { opacity: 0.25; cursor: default; }
+.tab-scroll-left { box-shadow: 6px 0 10px -6px rgba(0,0,0,0.4); }
+.tab-scroll-right { box-shadow: -6px 0 10px -6px rgba(0,0,0,0.4); }
+.tab-nav-wrap.scrollable .tab-scroll { display: flex; }
 .tab-btn {
   flex-shrink: 0;
   padding: 14px 22px;
@@ -337,6 +363,7 @@ html[data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
   text-transform: uppercase;
 }
 .tab-btn:hover { color: var(--gold-light); background: rgba(201,168,76,0.07); }
+.tab-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
 .tab-btn.active {
   color: var(--gold);
   border-bottom-color: var(--gold);
@@ -742,35 +769,172 @@ ul.styled-list li::before {
 .bc-stat { font-size: 0.8rem; color: var(--ink-muted); }
 .bc-stat strong { display: block; font-family: 'DM Mono', monospace; font-size: 1.05rem; color: var(--ink); font-weight: 500; }
 
+/* Bootcamp sector + tier styling */
+.sector-block { margin-bottom: 14px; }
+.sector-head {
+  display: flex; align-items: center; gap: 12px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  border-radius: 10px; padding: 16px 20px; margin: 28px 0 16px;
+}
+.sector-head .sector-icon { font-size: 1.6rem; flex-shrink: 0; }
+.sector-head h3 { color: var(--gold); font-size: 1.15rem; margin: 0; }
+.sector-head p { color: rgba(255,255,255,0.7); font-size: 0.82rem; margin: 2px 0 0; }
+.tier-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 3px 10px; border-radius: 6px; display: inline-block; margin-bottom: 10px;
+}
+.tier-top { background: rgba(201,168,76,0.18); color: var(--gold); border: 1px solid var(--gold); }
+.tier-mod { background: rgba(22,160,133,0.15); color: var(--teal); border: 1px solid rgba(22,160,133,0.4); }
+.tier-budget { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.4); }
+.bc-card.compact { padding: 18px 20px; margin-bottom: 12px; }
+.bc-card.compact p { margin-bottom: 8px; font-size: 0.86rem; }
+
+/* ===== DATE STAMP ===== */
+.date-stamp {
+  margin: 22px auto 0;
+  max-width: 720px;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  background: var(--tag-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  line-height: 1.5;
+}
+.date-stamp strong { color: var(--gold); }
+
+/* ===== KEY DATES TIMELINE ===== */
+.keydate { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--hairline); }
+.keydate:last-child { border-bottom: none; }
+.keydate-when {
+  flex-shrink: 0; width: 92px;
+  font-family: 'DM Mono', monospace; font-size: 0.8rem; font-weight: 600;
+  color: var(--gold); text-align: right; line-height: 1.4;
+}
+.keydate-what h4 { font-size: 0.92rem; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.keydate-what p { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.55; }
+
+/* ===== QUICK CAREERS FILTER BAR ===== */
+.filter-bar {
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.filter-row { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.filter-group { display: flex; align-items: center; gap: 8px; }
+.filter-group label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); }
+.filter-select {
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+  padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: var(--surface-2); color: var(--ink);
+  cursor: pointer;
+}
+.filter-select:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.filter-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; font-weight: 600; color: var(--ink);
+  background: var(--surface-2); border: 1px solid var(--card-border);
+  border-radius: 20px; padding: 7px 14px; cursor: pointer; user-select: none;
+  transition: all 0.2s;
+}
+.filter-toggle.active { background: rgba(201,168,76,0.18); border-color: var(--gold); color: var(--gold); }
+.filter-count { font-size: 0.8rem; color: var(--ink-muted); margin-left: auto; }
+.job-card.filtered-out { display: none; }
+.filter-empty { display: none; text-align: center; padding: 30px; color: var(--ink-muted); font-style: italic; }
+.filter-empty.show { display: block; }
+
+/* ===== ACCESSIBILITY ===== */
+a:focus-visible, button:focus-visible, select:focus-visible, .faq-q:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.skip-link {
+  position: absolute; left: -999px; top: 0; z-index: 1000;
+  background: var(--gold); color: #0d1b2a; padding: 10px 18px;
+  border-radius: 0 0 8px 0; font-weight: 700; text-decoration: none;
+}
+.skip-link:focus { left: 0; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ===== PRINT / SAVE AS PDF ===== */
+@media print {
+  /* Show every tab panel, expand all accordions */
+  .tab-panel { display: block !important; }
+  .faq-a, .job-body { max-height: none !important; overflow: visible !important; padding: 12px 0 !important; }
+  .job-body { padding: 8px 24px 18px !important; }
+  /* Hide interactive chrome */
+  .tab-nav-wrap, .theme-toggle, .tab-scroll, .filter-bar, .skip-link,
+  .faq-q span, .job-chevron, .tab-nav { display: none !important; }
+  /* Force light, ink-on-white for legibility & toner saving */
+  html[data-theme="dark"] { --page-bg:#fff; --surface:#fff; --surface-2:#f5f5f5; --ink:#111; --ink-muted:#333; --navy:#0d1b2a; --gold:#8a6d1f; }
+  body { background: #fff !important; color: #111 !important; font-size: 11pt; }
+  .site-header { position: static !important; box-shadow: none !important; border-bottom: 2px solid #0d1b2a; }
+  .card, .bc-card, .job-card, .country-card, .res-link {
+    box-shadow: none !important; border: 1px solid #ccc !important;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .card-navy, .gi-highlight, .disclaimer, .stat-box {
+    background: #f0ede3 !important; color: #111 !important; border: 1px solid #999 !important;
+  }
+  .card-navy h2, .card-navy h3, .card-navy p, .card-navy li,
+  .gi-highlight h2, .gi-highlight p, .disclaimer p, .disclaimer strong,
+  .stat-val, .stat-label { color: #111 !important; }
+  .cost-table th { background: #0d1b2a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page-hero { padding: 20px 0 16px; }
+  .section-header { break-after: avoid; page-break-after: avoid; }
+  a[href]::after { content: ""; } /* don't print raw URLs - keeps it clean */
+  .print-only { display: block !important; }
+}
+.print-only { display: none; }
+
 
 </style>
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 <header class="site-header">
-  <div class="logo-mark">E</div>
+  <div class="logo-mark" aria-hidden="true">E</div>
   <div class="header-titles">
     <div class="site-title">The Education Compass</div>
     <div class="site-subtitle">Your guide to navigating higher education</div>
   </div>
-  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle light and dark mode">
-    <span class="theme-icon-sun">☀️</span>
-    <span class="theme-icon-moon">🌙</span>
+  <button class="theme-toggle" id="printBtn" onclick="window.print()" aria-label="Print or save as PDF" style="margin-right:8px">
+    <span aria-hidden="true">🖨️</span>
+    <span class="theme-label">Print / PDF</span>
+  </button>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle light and dark mode" aria-pressed="false">
+    <span class="theme-icon-sun" aria-hidden="true">☀️</span>
+    <span class="theme-icon-moon" aria-hidden="true">🌙</span>
     <span class="theme-label">Dark</span>
   </button>
 </header>
 
-<nav class="tab-nav">
-  <button class="tab-btn active" onclick="showTab('home')">🏠 Home</button>
-  <button class="tab-btn" onclick="showTab('costs')">💰 Costs & Benefits</button>
-  <button class="tab-btn" onclick="showTab('military')">🪖 In-Military Options</button>
-  <button class="tab-btn" onclick="showTab('veteran')">🎖️ Veteran Options</button>
-  <button class="tab-btn" onclick="showTab('abroad')">🌍 Opportunities Abroad</button>
-  <button class="tab-btn" onclick="showTab('free')">📚 Free Courses</button>
-  <button class="tab-btn" onclick="showTab('bootcamps')">🚀 Bootcamps & Certs</button>
-  <button class="tab-btn" onclick="showTab('discussion')">💬 A Discussion</button>
-  <button class="tab-btn" onclick="showTab('quickcareers')">⚡ Quick Careers</button>
-</nav>
+<div class="tab-nav-wrap">
+  <button class="tab-scroll tab-scroll-left" id="tabScrollLeft" onclick="scrollTabs(-1)" aria-label="Scroll tabs left">‹</button>
+  <nav class="tab-nav" id="tabNav" role="tablist" aria-label="Guide sections">
+    <button class="tab-btn active" onclick="showTab('home')" role="tab" aria-selected="true">🏠 Home</button>
+    <button class="tab-btn" onclick="showTab('costs')" role="tab" aria-selected="false">💰 Costs & Benefits</button>
+    <button class="tab-btn" onclick="showTab('military')" role="tab" aria-selected="false">🪖 In-Military Options</button>
+    <button class="tab-btn" onclick="showTab('veteran')" role="tab" aria-selected="false">🎖️ Veteran Options</button>
+    <button class="tab-btn" onclick="showTab('abroad')" role="tab" aria-selected="false">🌍 Opportunities Abroad</button>
+    <button class="tab-btn" onclick="showTab('free')" role="tab" aria-selected="false">📚 Free Courses</button>
+    <button class="tab-btn" onclick="showTab('bootcamps')" role="tab" aria-selected="false">🚀 Bootcamps & Certs</button>
+    <button class="tab-btn" onclick="showTab('discussion')" role="tab" aria-selected="false">💬 A Discussion</button>
+    <button class="tab-btn" onclick="showTab('quickcareers')" role="tab" aria-selected="false">⚡ Quick Careers</button>
+  </nav>
+  <button class="tab-scroll tab-scroll-right" id="tabScrollRight" onclick="scrollTabs(1)" aria-label="Scroll tabs right">›</button>
+</div>
+
+<main id="main-content">
 
 <!-- ===================== HOME ===================== -->
 <div id="home-panel" class="tab-panel active">
@@ -779,6 +943,7 @@ ul.styled-list li::before {
     <span class="hero-tag">Welcome</span>
     <h1>Education Is More Than<br><em>a Degree</em></h1>
     <p>A practical, honest guide to the landscape of higher education — its costs, its paths, and the quiet transformation that happens when you sit in a classroom with people who see the world differently than you do.</p>
+    <div class="date-stamp">📅 Last updated: <strong>June 2026</strong> &nbsp;·&nbsp; Figures (tuition, GI Bill caps, salaries, course prices) change yearly — always verify current numbers at the official sources linked in each tab.</div>
   </div>
 
   <div class="disclaimer">
@@ -1021,6 +1186,101 @@ ul.styled-list li::before {
       <br>
       <p style="font-size:0.85rem"><strong>Catch:</strong> Slower and pricier than Sophia or CLEP, but the most universally accepted of the three. The safest option if your destination school is picky.</p>
     </div>
+  </div>
+
+  <div class="section-header">
+    <h2>FAFSA: What to Know Before You File</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card card-navy" style="margin-bottom:24px">
+    <h2>The FAFSA Is Free Money's Front Door</h2>
+    <p>The Free Application for Federal Student Aid (FAFSA) is the single most important form in college finance — it's the gateway to Pell Grants, federal work-study, subsidized loans, and most state and institutional aid. It is <strong style="color:var(--gold)">always free</strong> to file at studentaid.gov. Never pay a site that offers to "file it for you."</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card card-gold">
+      <h3>Key Caveats &amp; Common Mistakes</h3>
+      <ul class="styled-list">
+        <li><strong>File every single year</strong> — aid doesn't roll over; a new FAFSA is required each academic year</li>
+        <li><strong>File early.</strong> Much aid is first-come, first-served until the pool runs dry — filing in October beats filing in March even if the federal deadline is later</li>
+        <li><strong>"Low income" is not a requirement.</strong> Many middle and upper-middle income families skip it and lose work-study, unsubsidized loans, and merit aid that require a FAFSA on file</li>
+        <li>The <strong>SAI (Student Aid Index)</strong> replaced the old "EFC." It now uses a prior-prior tax year, so you'll use older, already-filed taxes</li>
+        <li>The <strong>IRS Direct Data Exchange</strong> auto-imports tax info — faster and fewer errors than manual entry</li>
+        <li>List <strong>every school</strong> you're considering — they only see aid data if you list them</li>
+        <li>Dependent students must include parent info; "independent" status has strict criteria (it's not just living on your own)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What the FAFSA Unlocks</h3>
+      <ul class="styled-list">
+        <li><strong>Pell Grant:</strong> Up to ~$7,395/yr, never repaid (need-based)</li>
+        <li><strong>Federal Work-Study:</strong> Part-time campus jobs built into your package</li>
+        <li><strong>Direct Subsidized Loans:</strong> No interest while enrolled — the best loan to take first</li>
+        <li><strong>Direct Unsubsidized Loans:</strong> Available regardless of need</li>
+        <li><strong>State grants &amp; scholarships:</strong> Most require a FAFSA on file</li>
+        <li><strong>Institutional aid:</strong> Many colleges use the FAFSA to award their own need-based money</li>
+        <li><strong>Some merit scholarships:</strong> Require it even when not need-based</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2>📅 Key Dates &amp; Deadlines</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card">
+    <p style="margin-bottom:14px;color:var(--ink-muted);font-size:0.9rem">A rough annual cycle for a traditional fall start. <strong>State and individual-school deadlines vary widely and are often earlier than the federal ones</strong> — always confirm the specific dates for your state and schools.</p>
+    <div class="keydate"><div class="keydate-when">OCT 1</div><div class="keydate-what"><h4>FAFSA Opens</h4><p>The new year's FAFSA becomes available. File as soon as you can — many aid programs are first-come, first-served.</p></div></div>
+    <div class="keydate"><div class="keydate-when">OCT–NOV</div><div class="keydate-what"><h4>Early Action / Early Decision</h4><p>Many college application deadlines fall here. Early Decision is binding; Early Action is not. Both can improve admission odds.</p></div></div>
+    <div class="keydate"><div class="keydate-when">NOV–FEB</div><div class="keydate-what"><h4>Scholarship Season Peaks</h4><p>The bulk of private and institutional scholarship deadlines cluster in late fall through winter. Apply broadly and continuously.</p></div></div>
+    <div class="keydate"><div class="keydate-when">JAN 1</div><div class="keydate-what"><h4>Regular Decision Deadlines Begin</h4><p>Many regular admission deadlines fall on or around January 1–15.</p></div></div>
+    <div class="keydate"><div class="keydate-when">FEB–MAR</div><div class="keydate-what"><h4>State &amp; Priority FAFSA Deadlines</h4><p>Numerous states and schools set their priority aid deadlines here. Miss it and you may lose access to limited grant funds even if you qualify.</p></div></div>
+    <div class="keydate"><div class="keydate-when">MAY 1</div><div class="keydate-what"><h4>National College Decision Day</h4><p>The traditional deadline to commit to a school and submit your enrollment deposit.</p></div></div>
+    <div class="keydate"><div class="keydate-when">JUN 30</div><div class="keydate-what"><h4>Federal FAFSA Deadline</h4><p>The hard federal cutoff for that aid year — but treat it as a last resort, not a target. Most money is gone long before this.</p></div></div>
+  </div>
+
+  <div class="section-header">
+    <h2>Common Scholarships to Pursue</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card card-navy" style="margin-bottom:20px">
+    <h2>The Golden Rule of Scholarships</h2>
+    <p>Apply to many, including small ones — a stack of $500–$2,000 awards adds up fast and faces less competition than the headline national prizes. <strong style="color:var(--gold)">Never pay a fee to apply</strong> for or "unlock" a scholarship; legitimate scholarships are always free to enter. Start with your own backyard: your school's financial aid office, local community foundations, employers, and civic groups.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Major National Scholarships</h3>
+      <ul class="styled-list">
+        <li><strong>Federal Pell Grant:</strong> Need-based, up to ~$7,395/yr (via FAFSA)</li>
+        <li><strong>Coca-Cola Scholars:</strong> $20,000 merit award for graduating high school seniors</li>
+        <li><strong>Gates Scholarship:</strong> Full-ride for outstanding minority students with financial need</li>
+        <li><strong>Jack Kent Cooke Foundation:</strong> Up to $55,000/yr for high-achieving students with financial need</li>
+        <li><strong>Dell Scholars:</strong> $20,000 plus support services for students showing grit and need</li>
+        <li><strong>Horatio Alger Scholarships:</strong> For students who've overcome adversity</li>
+        <li><strong>National Merit Scholarship:</strong> Based on PSAT/NMSQT performance</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Categories Worth Searching</h3>
+      <ul class="styled-list">
+        <li><strong>Local &amp; community:</strong> Rotary, Elks, Kiwanis, Lions Club, community foundations</li>
+        <li><strong>Employer &amp; parent's employer:</strong> Many companies fund employees' and dependents' education</li>
+        <li><strong>Identity &amp; heritage:</strong> Hispanic Scholarship Fund, UNCF, AISES, and many more</li>
+        <li><strong>Field of study:</strong> Professional associations in nursing, engineering, accounting, etc.</li>
+        <li><strong>Military-connected:</strong> AMVETS, VFW, American Legion, and branch-specific relief societies</li>
+        <li><strong>Religious organizations</strong> and your place of worship</li>
+        <li><strong>Unusual / niche:</strong> Tall clubs, left-handed students, duck-calling — odd ones have less competition</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card card-gold" style="margin-top:20px">
+    <h3>Free Scholarship Search Tools</h3>
+    <p>Search and match for free at <a href="https://bigfuture.collegeboard.org/scholarship-search" target="_blank" style="color:var(--gold)">BigFuture (College Board)</a>, <a href="https://www.fastweb.com/" target="_blank" style="color:var(--gold)">Fastweb</a>, <a href="https://www.goingmerry.com/" target="_blank" style="color:var(--gold)">Going Merry</a>, <a href="https://scholarships.com/" target="_blank" style="color:var(--gold)">Scholarships.com</a>, and the U.S. Dept. of Labor's <a href="https://www.careeronestop.org/Toolkit/Training/find-scholarships.aspx" target="_blank" style="color:var(--gold)">scholarship finder</a>. Set up a profile on a couple, then apply to everything you reasonably match.</p>
   </div>
 
   <div class="resources">
@@ -1733,7 +1993,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       The $1.2M lifetime earnings premium — is it real? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1744,7 +2004,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       Is the "underemployment paradox" as bad as it sounds? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1755,7 +2015,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       Is skills-based hiring replacing the degree — or is that overhyped? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1766,7 +2026,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       What majors actually justify the cost of college? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1777,7 +2037,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       What if I have no idea what I want to do? Should I still go? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1788,7 +2048,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       Does the prestige of the school really matter? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1799,7 +2059,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       Is going into debt for college ever worth it? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1810,7 +2070,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       Can you build a real career without a degree in 2026? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1821,7 +2081,7 @@ ul.styled-list li::before {
   </div>
 
   <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">
+    <div class="faq-q" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}" role="button" tabindex="0" aria-expanded="false">
       What about trade schools — are they as respected as colleges? <span>+</span>
     </div>
     <div class="faq-a">
@@ -1889,100 +2149,264 @@ ul.styled-list li::before {
   </div>
 
   <div class="section-header">
-    <h2>Reputable Coding &amp; Tech Bootcamps</h2>
+    <h2>Bootcamps by Job Sector</h2>
     <div class="section-line"></div>
   </div>
 
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name"><a href="https://www.appacademy.io/" target="_blank">App Academy</a></div>
-      <div class="bc-cost">~$17,000 · deferred tuition option</div>
-    </div>
-    <p>Consistently ranked at or near the top for outcomes. A 16-week full-stack program (JavaScript, Python, React, Flask, SQL, algorithms) with a famously selective admissions process and a deferred-tuition model where you pay only after landing a qualifying job. Graduates regularly place at major tech companies.</p>
-    <div class="bc-stats">
-      <div class="bc-stat"><strong>~16 wks</strong> Full-time</div>
-      <div class="bc-stat"><strong>~85%+</strong> Reported placement</div>
-      <div class="bc-stat"><strong>Full-stack</strong> + Gen AI focus</div>
-    </div>
-    <span class="badge badge-green">Deferred Tuition</span>
-    <span class="badge badge-gold">Highly Selective</span>
+  <p style="color:var(--ink-muted);font-size:0.9rem;margin-bottom:8px">Each sector below lists six vetted options across three tiers: <strong style="color:var(--gold)">Top Tier</strong> (premium price, strongest brand/outcomes), <strong style="color:var(--teal)">Moderate</strong> (solid mid-range value), and <strong style="color:var(--green)">Cost-Effective</strong> (budget-friendly or audit-free). Prices are approximate and change often — confirm on each provider's site.</p>
+
+  <!-- ===== SECTOR 1: PROJECT MANAGEMENT ===== -->
+  <div class="sector-head">
+    <span class="sector-icon">📋</span>
+    <div><h3>Project Management &amp; Business Operations</h3><p>Coordinating people, budgets, and timelines — PMI projects 22M+ new project-oriented roles needed globally by 2027.</p></div>
   </div>
 
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name"><a href="https://www.hackreactor.com/" target="_blank">Hack Reactor (Galvanize)</a></div>
-      <div class="bc-cost">~$17,980</div>
-    </div>
-    <p>Widely regarded as one of the most technically rigorous coding bootcamps in the U.S. The 12-week immersive (also offered in longer formats) goes deep into advanced JavaScript, React, Node.js, PostgreSQL, and system design. Includes a technical interview for admission to keep cohort quality high.</p>
-    <div class="bc-stats">
-      <div class="bc-stat"><strong>12–36 wks</strong> Multiple formats</div>
-      <div class="bc-stat"><strong>Rigorous</strong> CS-heavy</div>
-      <div class="bc-stat"><strong>Online</strong> + some campuses</div>
-    </div>
-    <span class="badge badge-purple">Most Rigorous</span>
-    <span class="badge badge-blue">Job Support</span>
+  <span class="tier-label tier-top">Top Tier</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.pmi.org/certifications/project-management-pmp" target="_blank">PMI — PMP Certification</a></div><div class="bc-cost">~$2,000 all-in (exam $405–$555 + prep ~$1,500)</div></div>
+    <p>The gold-standard credential for experienced project managers. Requires documented project experience to sit the exam. Among the highest-ROI certs in business operations.</p>
+    <span class="badge badge-gold">Industry Standard</span><span class="badge badge-blue">Experience Required</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.thinkful.com/" target="_blank">Thinkful — Technical PM (Flex)</a></div><div class="bc-cost">~$1,500–$9,500</div></div>
+    <p>Mentorship-driven, career-change-focused program with strong support and flexible scheduling. Good for moving into PM from another field.</p>
+    <span class="badge badge-gold">Mentor-Led</span><span class="badge badge-blue">Career Change</span>
   </div>
 
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name"><a href="https://flatironschool.com/" target="_blank">Flatiron School</a></div>
-      <div class="bc-cost">~$16,900</div>
-    </div>
-    <p>Offers software engineering, data science, cybersecurity, and product design across full-time and self-paced formats. Known for strong career coaching and a published outcomes report. A good fit if you want a structured program with flexibility in pace.</p>
-    <div class="bc-stats">
-      <div class="bc-stat"><strong>15+ wks</strong> Flexible</div>
-      <div class="bc-stat"><strong>~86%</strong> Reported placement</div>
-      <div class="bc-stat"><strong>4 tracks</strong> Eng/Data/Cyber/Design</div>
-    </div>
-    <span class="badge badge-blue">Multiple Tracks</span>
-    <span class="badge badge-gold">Career Coaching</span>
+  <span class="tier-label tier-mod">Moderate</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.simplilearn.com/" target="_blank">Simplilearn — PG Program (PMP)</a></div><div class="bc-cost">~$1,500–$3,000</div></div>
+    <p>Structured PMP-aligned bootcamp bundling exam prep, live classes, and projects. A middle path between a single cert and a full degree.</p>
+    <span class="badge badge-blue">PMP Prep</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.pmi.org/certifications/certified-associate-capm" target="_blank">PMI — CAPM (Entry-Level)</a></div><div class="bc-cost">Exam ~$225–$300 + prep</div></div>
+    <p>The "starter PMP" for those without years of experience. Lower barrier, no extensive experience prerequisite, and a recognized stepping stone.</p>
+    <span class="badge badge-teal">No Experience Needed</span>
   </div>
 
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name"><a href="https://www.springboard.com/" target="_blank">Springboard</a></div>
-      <div class="bc-cost">Varies · job guarantee</div>
-    </div>
-    <p>A mentorship-driven, online, self-paced model spanning software engineering, data science, cybersecurity, and UX design. Its signature feature is a job guarantee on eligible tracks — a tuition refund if you don't land a role within the defined window (read the conditions carefully).</p>
-    <div class="bc-stats">
-      <div class="bc-stat"><strong>Self-paced</strong> ~6–9 mo</div>
-      <div class="bc-stat"><strong>1:1</strong> Mentorship</div>
-      <div class="bc-stat"><strong>Job</strong> guarantee*</div>
-    </div>
-    <span class="badge badge-green">Job Guarantee*</span>
-    <span class="badge badge-blue">Mentor-Led</span>
+  <span class="tier-label tier-budget">Cost-Effective</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.coursera.org/professional-certificates/google-project-management" target="_blank">Google Project Management Certificate</a></div><div class="bc-cost">~$49/month (free to audit)</div></div>
+    <p>The unbeatable beginner option. ~6 months at a few hours/week; finish faster and pay less. Widely accepted for coordinator-level roles. Free to audit on Coursera.</p>
+    <span class="badge badge-green">Beginner-Friendly</span><span class="badge badge-gold">Free to Audit</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.scrum.org/professional-scrum-certifications" target="_blank">Scrum.org — PSM I (Scrum Master)</a></div><div class="bc-cost">Exam ~$200 (self-study free)</div></div>
+    <p>Become a certified Scrum Master cheaply via self-study. Agile/Scrum skills are in heavy demand and pair well with any PM track.</p>
+    <span class="badge badge-green">Self-Study</span>
   </div>
 
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name"><a href="https://generalassemb.ly/" target="_blank">General Assembly</a></div>
-      <div class="bc-cost">Varies by program</div>
-    </div>
-    <p>One of the largest and most established names, with immersive and part-time programs in software engineering, data, UX, and digital marketing. Strong employer-partnership network and flexible payment plans. A broad, well-known option with campuses in many cities plus online delivery.</p>
-    <div class="bc-stats">
-      <div class="bc-stat"><strong>12+ wks</strong> FT &amp; PT</div>
-      <div class="bc-stat"><strong>Broad</strong> Course catalog</div>
-      <div class="bc-stat"><strong>Global</strong> Campuses + online</div>
-    </div>
-    <span class="badge badge-gold">Well-Established</span>
-    <span class="badge badge-blue">Employer Network</span>
+  <!-- ===== SECTOR 2: IT & CLOUD ===== -->
+  <div class="sector-head">
+    <span class="sector-icon">☁️</span>
+    <div><h3>Information Technology (IT) &amp; Cloud Infrastructure</h3><p>The backbone roles — support, systems, networking, and cloud — accessible largely through certifications, not degrees.</p></div>
   </div>
 
-  <div class="bc-card" style="border-left:3px solid var(--green)">
-    <div class="bc-head">
-      <div class="bc-name"><a href="https://www.codeplatoon.org/" target="_blank">Code Platoon</a> <span style="font-size:0.8rem;color:var(--green)">★ For Veterans</span></div>
-      <div class="bc-cost">GI Bill eligible</div>
-    </div>
-    <p>A nonprofit coding bootcamp built specifically for <strong>veterans, service members, and military spouses</strong>. Full-stack immersive training with scholarships and GI Bill acceptance. If you're transitioning out of the military and eyeing tech, this is purpose-built for your situation and community.</p>
-    <div class="bc-stats">
-      <div class="bc-stat"><strong>~15 wks</strong> Immersive</div>
-      <div class="bc-stat"><strong>Veterans</strong> Focused</div>
-      <div class="bc-stat"><strong>GI Bill</strong> Accepted</div>
-    </div>
-    <span class="badge badge-green">Nonprofit</span>
-    <span class="badge badge-purple">Military Community</span>
-    <span class="badge badge-gold">GI Bill Eligible</span>
+  <span class="tier-label tier-top">Top Tier</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://aws.amazon.com/certification/certified-solutions-architect-associate/" target="_blank">AWS Solutions Architect Associate</a></div><div class="bc-cost">Exam ~$150 + prep ($0–$500)</div></div>
+    <p>One of the highest-ROI cloud certs. Validates real cloud-architecture skill; cloud roles are among the best-paid in IT. Self-study or bootcamp prep both work.</p>
+    <span class="badge badge-gold">High ROI</span><span class="badge badge-blue">Cloud Career</span>
   </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator/" target="_blank">Microsoft Azure Administrator (AZ-104)</a></div><div class="bc-cost">Exam ~$165 + prep</div></div>
+    <p>Strong in enterprise and government shops that run on Microsoft. A leading credential for cloud administrators.</p>
+    <span class="badge badge-gold">Enterprise/Gov</span>
+  </div>
+
+  <span class="tier-label tier-mod">Moderate</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.comptia.org/certifications/network" target="_blank">CompTIA Network+ / Cisco CCNA</a></div><div class="bc-cost">Network+ ~$369 · CCNA ~$300</div></div>
+    <p>The respected networking credentials. CCNA in particular opens network-technician and admin roles. Pair with A+ for a strong foundation.</p>
+    <span class="badge badge-teal">Networking</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://aws.amazon.com/certification/certified-cloud-practitioner/" target="_blank">AWS Cloud Practitioner</a></div><div class="bc-cost">Exam ~$100 + free prep</div></div>
+    <p>The entry-level cloud credential and gateway to the higher AWS certs. Official prep is free via AWS Skill Builder.</p>
+    <span class="badge badge-teal">Cloud Gateway</span>
+  </div>
+
+  <span class="tier-label tier-budget">Cost-Effective</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.comptia.org/certifications/a" target="_blank">CompTIA A+</a></div><div class="bc-cost">~$253/exam × 2 (≈$506)</div></div>
+    <p>The classic IT-support starting point: hardware, OS, and troubleshooting. The standard first credential for help-desk and desktop-support roles.</p>
+    <span class="badge badge-green">Entry Point</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.coursera.org/professional-certificates/google-it-support" target="_blank">Google IT Support Certificate</a></div><div class="bc-cost">~$49/month (free to audit)</div></div>
+    <p>Beginner-friendly path into IT support, created with employer input. Free to audit; pay only if you want the certificate.</p>
+    <span class="badge badge-green">Free to Audit</span>
+  </div>
+
+  <!-- ===== SECTOR 3: CYBERSECURITY ===== -->
+  <div class="sector-head">
+    <span class="sector-icon">🛡️</span>
+    <div><h3>Cybersecurity &amp; Data Privacy</h3><p>A field with millions of unfilled roles worldwide. Security clearances make veterans especially competitive.</p></div>
+  </div>
+
+  <span class="tier-label tier-top">Top Tier</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.isc2.org/certifications/cissp" target="_blank">ISC² — CISSP</a></div><div class="bc-cost">Exam ~$749 + prep</div></div>
+    <p>The senior cybersecurity credential (requires ~5 years experience). Commands six-figure salaries and is a frequent requirement for security leadership roles.</p>
+    <span class="badge badge-gold">Senior-Level</span><span class="badge badge-blue">6-Figure Roles</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.sans.org/cyber-security-courses/" target="_blank">SANS / GIAC Courses</a></div><div class="bc-cost">~$8,000–$9,000 per course</div></div>
+    <p>The premium, deeply technical training in the industry, with respected GIAC certifications. Expensive but elite — often employer-funded.</p>
+    <span class="badge badge-gold">Elite Technical</span>
+  </div>
+
+  <span class="tier-label tier-mod">Moderate</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.eccouncil.org/train-certify/certified-ethical-hacker-ceh/" target="_blank">EC-Council — CEH (Ethical Hacker)</a></div><div class="bc-cost">~$950–$1,200 (with training)</div></div>
+    <p>A well-known penetration-testing credential. Good for moving toward offensive-security and red-team roles.</p>
+    <span class="badge badge-teal">Pen Testing</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://flatironschool.com/courses/cybersecurity-bootcamp/" target="_blank">Flatiron / Fullstack Cyber Bootcamp</a></div><div class="bc-cost">~$16,000–$18,000</div></div>
+    <p>Structured immersive cybersecurity bootcamps with career coaching for career-changers who want a guided path rather than self-study.</p>
+    <span class="badge badge-teal">Guided Bootcamp</span>
+  </div>
+
+  <span class="tier-label tier-budget">Cost-Effective</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.comptia.org/certifications/security" target="_blank">CompTIA Security+</a></div><div class="bc-cost">Exam ~$404 + prep</div></div>
+    <p>The baseline security cert — required for many U.S. government and DoD contractor roles. The single best entry credential for the field.</p>
+    <span class="badge badge-green">DoD Baseline</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.coursera.org/professional-certificates/google-cybersecurity" target="_blank">Google Cybersecurity Certificate</a></div><div class="bc-cost">~$49/month (free to audit)</div></div>
+    <p>Beginner-friendly, 6-month path to entry-level security-analyst skills. Free to audit; pairs well with Security+.</p>
+    <span class="badge badge-green">Free to Audit</span>
+  </div>
+
+  <!-- ===== SECTOR 4: SOFTWARE & DATA ===== -->
+  <div class="sector-head">
+    <span class="sector-icon">💻</span>
+    <div><h3>Software Engineering &amp; Data Science (Digital Tech)</h3><p>Building software and working with data — the classic bootcamp territory with the strongest placement infrastructure.</p></div>
+  </div>
+
+  <span class="tier-label tier-top">Top Tier</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.appacademy.io/" target="_blank">App Academy</a></div><div class="bc-cost">~$17,000 (deferred-tuition option)</div></div>
+    <p>Consistently top-ranked for outcomes (~85%+ placement). Selective admissions, 16-week full-stack curriculum, and a deferred-tuition model — you pay after you're hired.</p>
+    <span class="badge badge-gold">Deferred Tuition</span><span class="badge badge-blue">~85%+ Placement</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.hackreactor.com/" target="_blank">Hack Reactor (Galvanize)</a></div><div class="bc-cost">~$17,980</div></div>
+    <p>Among the most technically rigorous bootcamps, with a CS-heavy curriculum (advanced JS, React, Node, system design) and a technical-interview admission gate.</p>
+    <span class="badge badge-gold">Most Rigorous</span>
+  </div>
+
+  <span class="tier-label tier-mod">Moderate</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://flatironschool.com/" target="_blank">Flatiron School</a></div><div class="bc-cost">~$16,900</div></div>
+    <p>Software engineering, data science, and more across full-time and self-paced formats, with strong career coaching and published outcomes (~86% placement).</p>
+    <span class="badge badge-teal">Multiple Tracks</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.springboard.com/" target="_blank">Springboard</a></div><div class="bc-cost">~$9,900–$16,500 · job guarantee*</div></div>
+    <p>Online, self-paced, mentor-driven programs in software, data science, and more — with a tuition-back job guarantee on eligible tracks (read the conditions).</p>
+    <span class="badge badge-teal">Job Guarantee*</span>
+  </div>
+
+  <span class="tier-label tier-budget">Cost-Effective</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.theodinproject.com/" target="_blank">The Odin Project</a></div><div class="bc-cost">100% Free</div></div>
+    <p>A complete, employer-respected full-stack curriculum at zero cost. Self-driven and project-based — the budget path that genuinely works for the disciplined.</p>
+    <span class="badge badge-green">Completely Free</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.codeplatoon.org/" target="_blank">Code Platoon</a> <span style="font-size:0.78rem;color:var(--green)">★ Veterans</span></div><div class="bc-cost">GI Bill eligible · scholarships</div></div>
+    <p>Nonprofit immersive bootcamp built for veterans, service members, and military spouses. GI Bill accepted and scholarships available.</p>
+    <span class="badge badge-green">GI Bill Eligible</span><span class="badge badge-purple">Veterans</span>
+  </div>
+
+  <!-- ===== SECTOR 5: HEALTHCARE ADMIN ===== -->
+  <div class="sector-head">
+    <span class="sector-icon">🏥</span>
+    <div><h3>Healthcare &amp; Medical Administration</h3><p>The non-clinical side of healthcare — billing, coding, and records — much of it remote-friendly and recession-resistant.</p></div>
+  </div>
+
+  <span class="tier-label tier-top">Top Tier</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.aapc.com/certification/cpc/" target="_blank">AAPC — CPC (Medical Coder)</a></div><div class="bc-cost">Training ~$2,000–$3,000 + exam ~$399</div></div>
+    <p>The industry-standard Certified Professional Coder credential. Strong, stable demand and heavily remote-friendly once certified.</p>
+    <span class="badge badge-gold">Industry Standard</span><span class="badge badge-blue">Remote-Friendly</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.ahima.org/certification-careers/certification-exams/ccs/" target="_blank">AHIMA — CCS / RHIT</a></div><div class="bc-cost">Exam ~$299 + prep</div></div>
+    <p>Respected health-information credentials for coding and records management — strong in hospital settings and a path toward HIM management.</p>
+    <span class="badge badge-gold">Hospital Settings</span>
+  </div>
+
+  <span class="tier-label tier-mod">Moderate</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.nha.org/" target="_blank">NHA — Billing &amp; Coding (CBCS)</a></div><div class="bc-cost">~$1,000–$2,500 (program + exam ~$117)</div></div>
+    <p>A more affordable entry into medical billing and coding via community colleges and NHA-aligned programs. Good launch point into the field.</p>
+    <span class="badge badge-teal">Affordable Entry</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.coursera.org/" target="_blank">Coursera Healthcare Admin Specializations</a></div><div class="bc-cost">~$49/month (free to audit)</div></div>
+    <p>University specializations in healthcare administration and management (e.g., Rutgers, Johns Hopkins) — flexible and low-cost for building knowledge.</p>
+    <span class="badge badge-teal">University-Backed</span>
+  </div>
+
+  <span class="tier-label tier-budget">Cost-Effective</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.coursera.org/professional-certificates/google-data-analytics" target="_blank">Google Data Analytics (Healthcare Data)</a></div><div class="bc-cost">~$49/month (free to audit)</div></div>
+    <p>Healthcare runs on data; this beginner analytics cert applies directly to health-information and reporting roles. Free to audit.</p>
+    <span class="badge badge-green">Free to Audit</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.redcross.org/take-a-class/cna" target="_blank">Local CNA / Medical Assistant Programs</a></div><div class="bc-cost">~$700–$2,500</div></div>
+    <p>Short community-college or Red Cross programs put you patient-facing fast and create a foothold to ladder into admin or clinical roles.</p>
+    <span class="badge badge-green">Fast Entry</span>
+  </div>
+
+  <!-- ===== SECTOR 6: GREEN TECH & TRADES ===== -->
+  <div class="sector-head">
+    <span class="sector-icon">🌱</span>
+    <div><h3>Green Technology &amp; Skilled Trades</h3><p>Solar, EV, energy efficiency, and the electrified trades — among the fastest-growing fields, and impossible to outsource.</p></div>
+  </div>
+
+  <span class="tier-label tier-top">Top Tier</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.nabcep.org/certifications/" target="_blank">NABCEP PV Installation Professional</a></div><div class="bc-cost">~$1,500–$4,000 (training + exam)</div></div>
+    <p>The premier solar credential. The advanced PVIP cert (beyond the entry Associate) marks you as a serious solar professional in a booming market.</p>
+    <span class="badge badge-gold">Premier Solar Cert</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.ibew.org/" target="_blank">IBEW / NECA Electrical Apprenticeship</a></div><div class="bc-cost">Free — you're paid to train</div></div>
+    <p>The gold standard for the electrified trades (including EV and solar work). 4–5 years earning while learning, ending at journeyman wages of $65K–$100K+ with benefits.</p>
+    <span class="badge badge-gold">Earn While Learning</span><span class="badge badge-purple">Union Benefits</span>
+  </div>
+
+  <span class="tier-label tier-mod">Moderate</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.solarenergy.org/" target="_blank">Solar Energy International (SEI)</a></div><div class="bc-cost">~$500–$3,000 per course track</div></div>
+    <p>A respected nonprofit training provider for solar PV, ideal for NABCEP exam prep. Online and hands-on lab options at mid-range cost.</p>
+    <span class="badge badge-teal">NABCEP Prep</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.energy.gov/eere/education" target="_blank">Community College Green-Tech Programs</a></div><div class="bc-cost">~$1,500–$8,000</div></div>
+    <p>Wind, solar, HVAC, and energy-efficiency certificates at community colleges — affordable, often with local employer pipelines and financial aid eligibility.</p>
+    <span class="badge badge-teal">Local Pipelines</span>
+  </div>
+
+  <span class="tier-label tier-budget">Cost-Effective</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.nabcep.org/certifications/associate-program/" target="_blank">NABCEP PV Associate</a></div><div class="bc-cost">Exam ~$200 + prep</div></div>
+    <p>The entry-level solar credential — an accessible, low-cost way to signal baseline competence and break into solar installation work.</p>
+    <span class="badge badge-green">Entry Solar Cert</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.osha.gov/training/outreach" target="_blank">OSHA 10 / 30 Safety Cards</a></div><div class="bc-cost">~$80–$200</div></div>
+    <p>Often required on job sites across trades and green-tech construction. Cheap, fast, and a near-universal résumé booster for hands-on work.</p>
+    <span class="badge badge-green">Job-Site Required</span>
+  </div>
+
 
   <div class="section-header">
     <h2>Industry Certifications (Self-Study, No Bootcamp Needed)</h2>
@@ -2016,6 +2440,43 @@ ul.styled-list li::before {
     </div>
   </div>
 
+  <div class="section-header">
+    <h2>📊 Six Sigma &amp; Lean (Process Improvement)</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card card-navy" style="margin-bottom:20px">
+    <h2>What Is Six Sigma?</h2>
+    <p>Six Sigma is a data-driven methodology for reducing defects and improving processes, used across manufacturing, healthcare, logistics, finance, and operations. Certifications follow a martial-arts "belt" structure. It's one of the most portable business credentials — valuable in nearly any industry, and a strong complement to a project-management or operations résumé. Green Belt holders report average salaries around $116,000, though pay depends heavily on role and industry.</p>
+    <br>
+    <p style="font-size:0.86rem">Three main bodies certify: <strong style="color:var(--gold)">ASQ</strong> (American Society for Quality — most rigorous/prestigious, charges renewal fees), <strong style="color:var(--gold)">IASSC</strong> (exam-only, no mandatory training), and <strong style="color:var(--gold)">CSSC</strong> (Council for Six Sigma Certification — the budget option, no renewal fees). Prices below are approximate exam fees; full training packages cost more.</p>
+  </div>
+
+  <div class="grid-3">
+    <div class="card card-gold">
+      <h3>🟡 Yellow Belt</h3>
+      <p><strong>For:</strong> Team members supporting improvement projects; a solid intro to the concepts.</p>
+      <br>
+      <p style="font-size:0.86rem"><strong>Price range:</strong> CSSC ~$99 · IASSC ~$195 · ASQ ~$394 (non-member). Full courses run $100–$500. Duration: 1–2 days of study.</p>
+    </div>
+    <div class="card card-gold">
+      <h3>🟢 Green Belt</h3>
+      <p><strong>For:</strong> Those leading smaller projects or supporting Black Belts; the most commonly requested belt. ASQ requires ~3 years' experience.</p>
+      <br>
+      <p style="font-size:0.86rem"><strong>Price range:</strong> CSSC ~$159 · IASSC ~$295 · ASQ ~$469 (non-member). Full courses $300–$2,000. Duration: 2–6 weeks self-paced.</p>
+    </div>
+    <div class="card card-gold">
+      <h3>⚫ Black Belt</h3>
+      <p><strong>For:</strong> Those leading complex improvement projects full-time and mentoring Green Belts.</p>
+      <br>
+      <p style="font-size:0.86rem"><strong>Price range:</strong> CSSC ~$299 · IASSC ~$395 · ASQ higher. Full courses $500–$5,000. <strong>Master Black Belt:</strong> $7,000–$15,000.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:4px">
+    <p style="font-size:0.88rem;color:var(--ink-muted)"><strong>Budget tip:</strong> The <a href="https://www.sixsigmacouncil.org/" target="_blank" style="color:var(--gold)">Council for Six Sigma Certification (CSSC)</a> offers the lowest exam fees and charges no recurring renewal fees, unlike ASQ and IASSC. Platforms like Coursera and Udemy also offer low-cost ($200–$500) Six Sigma courses. For maximum prestige with employers, <a href="https://asq.org/cert" target="_blank" style="color:var(--gold)">ASQ</a> carries the most weight. If you just want to learn the concepts, a free or cheap White Belt intro course is a fine starting point.</p>
+  </div>
+
   <!-- ============ ENGLISH TEACHING / TEFL ============ -->
   <div class="section-header">
     <h2>🌏 Teaching English Abroad (TEFL / TESOL)</h2>
@@ -2026,62 +2487,55 @@ ul.styled-list li::before {
     <h2 style="color:var(--gold-light)">Your Passport to Working Overseas</h2>
     <p>A TEFL (Teaching English as a Foreign Language) certification is one of the fastest, most affordable ways to legally live and work abroad — popular with gap-year travelers, recent grads, and career changers alike. A 120-hour certification is the global baseline, opening doors to teaching jobs across Asia, Europe, Latin America, and the Middle East, plus the booming online English-teaching market. Salaries range from modest (Latin America, Southeast Asia) to genuinely lucrative with savings potential (South Korea, China, the Gulf states).</p>
     <br>
-    <p style="font-size:0.88rem">The single most important factor when choosing a course is <strong style="color:var(--gold-light)">accreditation</strong>. The market is full of cheap, worthless certificates. Below are the credentials and accreditation bodies that employers actually recognize.</p>
+    <p style="font-size:0.88rem">The single most important factor when choosing a course is <strong style="color:var(--gold-light)">accreditation</strong>. The market is full of cheap, worthless certificates. Below are recognized providers and credentials across three tiers — and the accreditation bodies (CELTA/Cambridge, Trinity, ACCET, TQUK, IATQuO) to look for on any course you consider.</p>
   </div>
 
   <div class="section-header">
-    <h2>Top 5 TEFL Credentials &amp; Accreditations</h2>
+    <h2>6 TEFL Options Across Three Tiers</h2>
     <div class="section-line"></div>
   </div>
 
-  <p style="color:var(--ink-muted);font-size:0.9rem;margin-bottom:20px">The first two are specific gold-standard qualifications; the rest are the accreditation bodies to look for when choosing among the many online TEFL providers. A reputable 120-hour course will be backed by one of these.</p>
-
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name">1. <a href="https://www.cambridgeenglish.org/teaching-english/teaching-qualifications/celta/" target="_blank">Cambridge CELTA</a></div>
-      <div class="bc-cost">Gold Standard · RQF Level 5</div>
-    </div>
-    <p>The most recognized brand name in English language teaching worldwide, administered by Cambridge University's assessment arm. Intensive, highly practical, and includes observed, assessed teaching practice with real students. Government-regulated at Level 5 on the UK's Regulated Qualifications Framework. The majority of serious TEFL employers specifically request CELTA or Trinity.</p>
-    <span class="badge badge-gold">Most Recognized</span>
-    <span class="badge badge-blue">Observed Teaching Practice</span>
+  <span class="tier-label tier-top">Top Tier — Gold-Standard Credentials</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.cambridgeenglish.org/teaching-english/teaching-qualifications/celta/" target="_blank">Cambridge CELTA</a></div><div class="bc-cost">~$1,500–$2,500</div></div>
+    <p>The most recognized brand in English language teaching, regulated at RQF Level 5 by Cambridge. Intensive, with observed, assessed teaching practice on real students. Most serious employers specifically request CELTA or Trinity.</p>
+    <span class="badge badge-gold">Most Recognized</span><span class="badge badge-blue">Observed Practice</span>
   </div>
-
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name">2. <a href="https://www.trinitycollege.com/qualifications/teaching-english/CertTESOL" target="_blank">Trinity College London CertTESOL</a></div>
-      <div class="bc-cost">Gold Standard · RQF Level 5</div>
-    </div>
-    <p>The co-equal of CELTA, awarded by Trinity College London and also regulated at Level 5. Equally respected by employers, with the same emphasis on hands-on teaching practice and theory. Choosing between CELTA and Trinity usually comes down to which is offered near you — both are top-tier.</p>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.trinitycollege.com/qualifications/teaching-english/CertTESOL" target="_blank">Trinity College London CertTESOL</a></div><div class="bc-cost">~$1,400–$2,400</div></div>
+    <p>The co-equal of CELTA, also Ofqual-regulated at Level 5, with the same emphasis on hands-on teaching practice. Equally respected — choose based on which is offered near you.</p>
     <span class="badge badge-gold">Co-Gold Standard</span>
-    <span class="badge badge-blue">Ofqual Regulated</span>
   </div>
 
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name">3. <a href="https://www.accet.org/" target="_blank">ACCET</a></div>
-      <div class="bc-cost">U.S. Dept. of Education-recognized</div>
-    </div>
-    <p>The Accrediting Council for Continuing Education &amp; Training, founded in 1974 and recognized by the U.S. Department of Education. When an online or in-person TEFL provider is ACCET-accredited, it signals genuine, U.S.-recognized quality assurance — a strong mark to look for on American-based courses.</p>
-    <span class="badge badge-green">U.S. Recognized</span>
+  <span class="tier-label tier-mod">Moderate — Accredited Online Providers</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.internationalteflacademy.com/" target="_blank">International TEFL Academy</a></div><div class="bc-cost">~$1,399–$1,799 (120-hr)</div></div>
+    <p>A large, well-regarded provider with accredited 120-hour courses (online or in-person), lifetime job-search guidance, and Level 5-equivalent recognition. Strong support network for first-time teachers.</p>
+    <span class="badge badge-teal">Job Guidance</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.theteflacademy.com/" target="_blank">The TEFL Academy</a></div><div class="bc-cost">~$300–$600 (Level 5)</div></div>
+    <p>Offers Ofqual-regulated and DEAC-recognized Level 5 courses at a mid-range price, with good tutor support. Verify the specific accreditation of the package you choose.</p>
+    <span class="badge badge-teal">Level 5 · Regulated</span>
   </div>
 
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name">4. <a href="https://www.tquk.org/" target="_blank">TQUK (Training Qualifications UK)</a></div>
-      <div class="bc-cost">Ofqual-regulated awarding body</div>
-    </div>
-    <p>A UK awarding organization approved by Ofqual, the UK government's official qualifications regulator. Many reputable online "Level 5" TEFL diplomas are backed by TQUK. Note: a Level 5 rating reflects the academic level of the course, and is broadly comparable to (though not identical to) CELTA/Trinity — verify what the specific qualification includes.</p>
-    <span class="badge badge-blue">Ofqual-Regulated</span>
+  <span class="tier-label tier-budget">Cost-Effective — Budget Entry</span>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.teachaway.com/" target="_blank">Teach Away (w/ University Partner)</a></div><div class="bc-cost">~$300–$700</div></div>
+    <p>A globally recognized provider whose 120-hour course is offered in partnership with an accredited university. Doubles as a leading job board for placements abroad and online.</p>
+    <span class="badge badge-green">Course + Jobs</span>
+  </div>
+  <div class="bc-card compact">
+    <div class="bc-head"><div class="bc-name"><a href="https://www.groupon.com/" target="_blank">Premier TEFL / Groupon-type 120-hr</a></div><div class="bc-cost">~$30–$200</div></div>
+    <p>Heavily discounted online 120-hour courses get your foot in the door for online teaching and some Asian markets. <strong>Verify accreditation</strong> (TQUK/IATQuO) before buying — the cheapest, unaccredited ones aren't worth it.</p>
+    <span class="badge badge-green">Budget Entry</span><span class="badge badge-red">Check Accreditation</span>
   </div>
 
-  <div class="bc-card">
-    <div class="bc-head">
-      <div class="bc-name">5. <a href="https://www.iatquo.org/" target="_blank">IATQuO</a></div>
-      <div class="bc-cost">Specialist TEFL accreditor</div>
-    </div>
-    <p>The International Accreditation of TESOL Qualifying Organisations, established in 2004. It accredits only a small, carefully vetted set of TEFL courses and is well respected within the industry. Spotting IATQuO accreditation is a reliable sign a course meets independent quality standards.</p>
-    <span class="badge badge-purple">Respected &amp; Selective</span>
+  <div class="card" style="margin-top:6px">
+    <h3>The Accreditation Bodies to Look For</h3>
+    <p>Whatever course you pick, confirm it's backed by one of these recognized accreditors: <strong>Cambridge (CELTA)</strong> and <strong>Trinity College London</strong> (the two gold-standard, Ofqual Level 5 awards); <strong><a href="https://www.accet.org/" target="_blank" style="color:var(--gold)">ACCET</a></strong> (U.S. Dept. of Education-recognized); <strong><a href="https://www.tquk.org/" target="_blank" style="color:var(--gold)">TQUK</a></strong> (Ofqual-regulated UK awarding body); and <strong><a href="https://www.iatquo.org/" target="_blank" style="color:var(--gold)">IATQuO</a></strong> (a selective, well-respected specialist TEFL accreditor). A 120-hour course from an accredited provider is the practical baseline employers expect.</p>
   </div>
+
 
   <div class="card" style="margin-top:8px">
     <h3>Where to Take an Accredited Course</h3>
@@ -2298,11 +2752,31 @@ ul.styled-list li::before {
 
   <!-- ============ TOP 20 QUICK CAREERS ============ -->
   <div class="section-header">
-    <h2>Top 21 Quick-Entry Careers</h2>
+    <h2>Top Quick-Entry Careers (24+)</h2>
     <div class="section-line"></div>
   </div>
 
   <p style="color:var(--ink-muted);font-size:0.92rem;margin-bottom:28px">Each of these careers can be entered with minimal prerequisites — most require weeks to months of training, not years. Salary figures reflect national medians; high-cost metro areas pay significantly more.</p>
+
+  <div class="filter-bar">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="sortJobs">Sort by</label>
+        <select class="filter-select" id="sortJobs" onchange="applyJobFilters()">
+          <option value="default">Default order</option>
+          <option value="salary-desc">Salary: High → Low</option>
+          <option value="salary-asc">Salary: Low → High</option>
+          <option value="time-asc">Training time: Short → Long</option>
+          <option value="alpha">Name: A → Z</option>
+        </select>
+      </div>
+      <button class="filter-toggle" id="ftNoDegree" onclick="toggleFilter(this); applyJobFilters();">🎓 No degree required</button>
+      <button class="filter-toggle" id="ftGiBill" onclick="toggleFilter(this); applyJobFilters();">🎖️ GI Bill eligible</button>
+      <button class="filter-toggle" id="ftFast" onclick="toggleFilter(this); applyJobFilters();">⚡ Under 6 months</button>
+      <span class="filter-count" id="filterCount"></span>
+    </div>
+  </div>
+  <div class="filter-empty" id="filterEmpty">No careers match those filters. Try removing one.</div>
 
   <style>
   .job-card {
@@ -2363,7 +2837,7 @@ ul.styled-list li::before {
   </style>
 
   <!-- JOB 1 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="40500" data-months="2" data-nodegree="true" data-gibill="true">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">01</div>
       <div class="job-title-group">
@@ -2395,8 +2869,75 @@ ul.styled-list li::before {
     </div>
   </div>
 
+  <!-- JOB 1B: LPN -->
+  <div class="job-card" data-salary="59000" data-months="12" data-nodegree="true" data-gibill="true">
+    <div class="job-header" onclick="toggleJob(this)">
+      <div class="job-num">1b</div>
+      <div class="job-title-group">
+        <div class="job-title">Licensed Practical Nurse (LPN/LVN)</div>
+        <div class="job-tagline">The next rung above CNA — basic nursing care under an RN or physician</div>
+      </div>
+      <div class="job-salary">$54,000–$65,000<span>Median Annual</span></div>
+      <div class="job-chevron">▼</div>
+    </div>
+    <div class="job-body">
+      <p>Licensed Practical Nurses (called LVNs in California and Texas) provide hands-on nursing care — monitoring vitals, administering some medications, changing dressings, and keeping records — under the supervision of registered nurses and doctors. It's the natural step up from CNA: roughly a one-year program versus a CNA's few weeks, with a meaningful pay bump and far more clinical responsibility. Many people work as a CNA while completing LPN school.</p>
+      <div class="req-grid">
+        <div class="req-box"><h5>Requirements</h5><ul>
+          <li>High school diploma or GED</li>
+          <li>State-approved practical nursing program: ~12 months (often at a community college or vocational school)</li>
+          <li>Pass the <strong>NCLEX-PN</strong> national licensing exam</li>
+          <li>State licensure</li>
+          <li>Background check and immunizations</li>
+        </ul></div>
+        <div class="req-box"><h5>Quick Facts</h5><ul>
+          <li>Training cost: $10,000–$25,000 (community college is cheapest)</li>
+          <li>Timeline: ~1 year to licensure</li>
+          <li>GI Bill eligible at approved programs</li>
+          <li>Ladder to: RN via "LPN-to-RN bridge" programs (often accelerated)</li>
+          <li>Strong demand in long-term care, clinics, and home health</li>
+        </ul></div>
+      </div>
+      <div class="job-meta"><span class="badge badge-green">~1 Year</span><span class="badge badge-blue">NCLEX-PN</span><span class="badge badge-gold">GI Bill Eligible</span><span class="badge badge-purple">Bridges to RN</span></div>
+    </div>
+  </div>
+
+  <!-- JOB 1C: RN -->
+  <div class="job-card" data-salary="86000" data-months="24" data-nodegree="true" data-gibill="true">
+    <div class="job-header" onclick="toggleJob(this)">
+      <div class="job-num">1c</div>
+      <div class="job-title-group">
+        <div class="job-title">Registered Nurse (RN)</div>
+        <div class="job-tagline">One of the best ROI moves in all of education — high pay, 2-year entry option, massive demand</div>
+      </div>
+      <div class="job-salary">$80,000–$110,000<span>Median Annual</span></div>
+      <div class="job-chevron">▼</div>
+    </div>
+    <div class="job-body">
+      <p>Registered Nurses assess patients, administer medications and treatments, operate medical equipment, and coordinate care across the healthcare team. The crucial fact most people don't realize: you can become an RN with a <strong>2-year Associate Degree in Nursing (ADN)</strong> — you don't need a four-year degree to start. That makes RN one of the highest-return education paths available: roughly two years of school for an $80,000+ career with nationwide demand and enormous upward mobility.</p>
+      <p>Once working, hospitals frequently help fund an RN-to-BSN bridge (the bachelor's), and from there nurses can ladder into Nurse Practitioner ($120K+), nurse anesthetist (CRNA, $200K+), management, or specialized fields. Few careers combine this much job security, pay, and advancement from such an accessible starting point.</p>
+      <div class="req-grid">
+        <div class="req-box"><h5>Requirements</h5><ul>
+          <li>Associate Degree in Nursing (ADN, ~2 years) <em>or</em> Bachelor of Science in Nursing (BSN, 4 years)</li>
+          <li>Pass the <strong>NCLEX-RN</strong> national licensing exam</li>
+          <li>State licensure</li>
+          <li>Clinical rotations completed during the program</li>
+          <li>Background check, immunizations, CPR/BLS certification</li>
+        </ul></div>
+        <div class="req-box"><h5>Quick Facts</h5><ul>
+          <li>Training cost: ADN $6,000–$40,000; BSN more (community college ADN is the value play)</li>
+          <li>Timeline: ~2 years (ADN) to a licensed, well-paid career</li>
+          <li>GI Bill eligible; many hospitals offer tuition reimbursement</li>
+          <li>Ladder to: BSN, Nurse Practitioner, CRNA ($200K+), nurse management, specialties</li>
+          <li>Among the most in-demand occupations in the U.S. for the foreseeable future</li>
+        </ul></div>
+      </div>
+      <div class="job-meta"><span class="badge badge-green">2-Year ADN Entry</span><span class="badge badge-gold">$80K–$110K</span><span class="badge badge-blue">NCLEX-RN</span><span class="badge badge-purple">Huge Advancement</span></div>
+    </div>
+  </div>
+
   <!-- JOB 2 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="49000" data-months="3" data-nodegree="true" data-gibill="true">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">02</div>
       <div class="job-title-group">
@@ -2430,7 +2971,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 3 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="72500" data-months="2" data-nodegree="true" data-gibill="true">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">03</div>
       <div class="job-title-group">
@@ -2464,7 +3005,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 4 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="72500" data-months="6" data-nodegree="true" data-gibill="true">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">04</div>
       <div class="job-title-group">
@@ -2497,7 +3038,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 5 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="85000" data-months="48" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">05</div>
       <div class="job-title-group">
@@ -2531,7 +3072,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 6 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="80000" data-months="48" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">06</div>
       <div class="job-title-group">
@@ -2565,7 +3106,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 7 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="66000" data-months="12" data-nodegree="true" data-gibill="true">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">07</div>
       <div class="job-title-group">
@@ -2598,7 +3139,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 8 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="57500" data-months="6" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">08</div>
       <div class="job-title-group">
@@ -2631,7 +3172,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 9 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="89500" data-months="24" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">09</div>
       <div class="job-title-group">
@@ -2664,7 +3205,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 10 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="55000" data-months="3" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">10</div>
       <div class="job-title-group">
@@ -2697,7 +3238,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 11 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="59000" data-months="12" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">11</div>
       <div class="job-title-group">
@@ -2730,7 +3271,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 12 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="46000" data-months="12" data-nodegree="true" data-gibill="true">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">12</div>
       <div class="job-title-group">
@@ -2763,7 +3304,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 13 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="60000" data-months="4" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">13</div>
       <div class="job-title-group">
@@ -2796,7 +3337,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 14 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="85000" data-months="24" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">14</div>
       <div class="job-title-group">
@@ -2829,7 +3370,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 15 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="82500" data-months="18" data-nodegree="true" data-gibill="true">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">15</div>
       <div class="job-title-group">
@@ -2862,7 +3403,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 16 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="80000" data-months="6" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">16</div>
       <div class="job-title-group">
@@ -2895,7 +3436,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 17 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="41500" data-months="1" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">17</div>
       <div class="job-title-group">
@@ -2928,7 +3469,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 18 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="55000" data-months="6" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">18</div>
       <div class="job-title-group">
@@ -2961,7 +3502,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 19 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="52500" data-months="2" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">19</div>
       <div class="job-title-group">
@@ -2994,7 +3535,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 20 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="72500" data-months="4" data-nodegree="true" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">20</div>
       <div class="job-title-group">
@@ -3027,7 +3568,7 @@ ul.styled-list li::before {
   </div>
 
   <!-- JOB 21 -->
-  <div class="job-card">
+  <div class="job-card" data-salary="66000" data-months="12" data-nodegree="false" data-gibill="false">
     <div class="job-header" onclick="toggleJob(this)">
       <div class="job-num">21</div>
       <div class="job-title-group">
@@ -3068,6 +3609,108 @@ ul.styled-list li::before {
     </div>
   </div>
 
+  <!-- JOB 22: POLICE OFFICER -->
+  <div class="job-card" data-salary="74000" data-months="6" data-nodegree="true" data-gibill="true">
+    <div class="job-header" onclick="toggleJob(this)">
+      <div class="job-num">22</div>
+      <div class="job-title-group">
+        <div class="job-title">Police Officer</div>
+        <div class="job-tagline">Municipal law enforcement — paid academy training, no degree required in most departments</div>
+      </div>
+      <div class="job-salary">$60,000–$90,000<span>Median (varies by city)</span></div>
+      <div class="job-chevron">▼</div>
+    </div>
+    <div class="job-body">
+      <p>Municipal police officers patrol communities, respond to calls, investigate incidents, and enforce laws. A defining feature: most departments <strong>pay you a salary while you attend the police academy</strong> — you're hired first, then trained. Most agencies require only a high school diploma or GED to apply, though some prefer or reward college credit. Pay varies widely by city and rises significantly with overtime, rank, and specialization (detective, K-9, SWAT, etc.).</p>
+      <div class="req-grid">
+        <div class="req-box"><h5>Requirements</h5><ul>
+          <li>U.S. citizen, typically 21+ (some agencies 18–20 to apply)</li>
+          <li>High school diploma or GED (some prefer college credit)</li>
+          <li>Valid driver's license; clean criminal record</li>
+          <li>Pass written exam, physical fitness test, polygraph, psychological &amp; medical screening</li>
+          <li>Complete police academy (~13–26 weeks, usually paid)</li>
+          <li>Field training period after graduation</li>
+        </ul></div>
+        <div class="req-box"><h5>Quick Facts</h5><ul>
+          <li>Training cost: Usually free — academy is paid as employment</li>
+          <li>Timeline: ~6 months academy + field training</li>
+          <li>Veterans: military experience is highly valued and often gives hiring preference</li>
+          <li>Strong pension and benefits; retirement often after 20–25 years</li>
+          <li>Ladder to: Detective, Sergeant, Lieutenant, specialized units, federal agencies</li>
+        </ul></div>
+      </div>
+      <div class="job-meta"><span class="badge badge-green">Paid Academy</span><span class="badge badge-gold">Pension</span><span class="badge badge-blue">Veteran Preference</span><span class="badge badge-purple">No Degree Needed</span></div>
+    </div>
+  </div>
+
+  <!-- JOB 23: STATE TROOPER -->
+  <div class="job-card" data-salary="78000" data-months="7" data-nodegree="true" data-gibill="true">
+    <div class="job-header" onclick="toggleJob(this)">
+      <div class="job-num">23</div>
+      <div class="job-title-group">
+        <div class="job-title">State Trooper / Highway Patrol</div>
+        <div class="job-tagline">Statewide law enforcement — among the best-paid entry policing roles, paid academy</div>
+      </div>
+      <div class="job-salary">$68,000–$110,000<span>Varies by state</span></div>
+      <div class="job-chevron">▼</div>
+    </div>
+    <div class="job-body">
+      <p>State troopers (also called state police or highway patrol) have statewide jurisdiction — patrolling highways, enforcing traffic law, investigating major crimes, and assisting local agencies. They typically out-earn municipal officers, and like police academies, the <strong>state trooper academy is paid</strong>. Starting salaries are strong: many states pay troopers $68,000–$75,000 on graduation, climbing past $95,000–$110,000 within five years. The academy is more intensive than most municipal ones — often a 26–36 week live-in, paramilitary program.</p>
+      <div class="req-grid">
+        <div class="req-box"><h5>Requirements</h5><ul>
+          <li>U.S. citizen, typically 21+</li>
+          <li>High school diploma or GED minimum; many states reward or prefer college credit/degree</li>
+          <li>Valid driver's license; excellent driving and criminal record</li>
+          <li>Rigorous screening: written exam, physical fitness, polygraph, background investigation, medical &amp; psychological</li>
+          <li>Complete the state police academy (~26–36 weeks, live-in, paid)</li>
+          <li>Field training and a probationary period (often one year)</li>
+        </ul></div>
+        <div class="req-box"><h5>Quick Facts</h5><ul>
+          <li>Training cost: Free — cadets are paid during the academy</li>
+          <li>Timeline: ~7–9 months academy + field training + probation</li>
+          <li>Pay examples: PA ~$71,600 start → ~$95,500 at 5 yrs; NY up to ~$109,600 after year one</li>
+          <li>Veterans: military service is highly valued; some states give a degree-equivalency for it</li>
+          <li>Excellent pension, benefits, and clear promotion ladder to investigator/command roles</li>
+        </ul></div>
+      </div>
+      <div class="job-meta"><span class="badge badge-green">Paid Live-In Academy</span><span class="badge badge-gold">$68K–$110K</span><span class="badge badge-blue">Statewide Jurisdiction</span><span class="badge badge-purple">Strong Pension</span></div>
+    </div>
+  </div>
+
+  <!-- JOB 24: FIREFIGHTER -->
+  <div class="job-card" data-salary="57000" data-months="6" data-nodegree="true" data-gibill="true">
+    <div class="job-header" onclick="toggleJob(this)">
+      <div class="job-num">24</div>
+      <div class="job-title-group">
+        <div class="job-title">Firefighter</div>
+        <div class="job-tagline">Fire suppression, rescue, and emergency medical response — EMT certification usually required</div>
+      </div>
+      <div class="job-salary">$50,000–$85,000<span>Median (varies by dept.)</span></div>
+      <div class="job-chevron">▼</div>
+    </div>
+    <div class="job-body">
+      <p>Firefighters respond to fires, medical emergencies, vehicle accidents, and rescues. Most of the call volume is actually medical, which is why nearly all departments require (or strongly prefer) <strong>EMT certification</strong> — and paramedic certification makes you significantly more competitive. The hiring process is famously competitive, so candidates often stack credentials: EMT, a Fire Academy certificate, and sometimes a Fire Science associate degree. The schedule (often 24-hour shifts) means lots of consecutive days off, and overtime can substantially boost pay.</p>
+      <div class="req-grid">
+        <div class="req-box"><h5>Requirements</h5><ul>
+          <li>U.S. citizen, typically 18+; high school diploma or GED</li>
+          <li>Valid driver's license; clean record; excellent physical fitness</li>
+          <li><strong>EMT certification</strong> (usually required; paramedic preferred in many departments)</li>
+          <li>Pass written exam, physical ability test (CPAT), interview, background, medical</li>
+          <li>Complete a Fire Academy (~12–24 weeks)</li>
+          <li>Fire Science associate degree helps competitiveness (not always required)</li>
+        </ul></div>
+        <div class="req-box"><h5>Quick Facts</h5><ul>
+          <li>Training cost: Academy may be paid (if hired first) or self-funded (~$2,000–$5,000)</li>
+          <li>Timeline: EMT (~3 months) + academy (~3–6 months); hiring can take longer due to competition</li>
+          <li>Veterans: military experience and discipline are highly valued; hiring preference common</li>
+          <li>Schedule: often 24-hour shifts = many days off; overtime boosts income</li>
+          <li>Ladder to: Engineer/Driver, Lieutenant, Captain, Paramedic, Fire Investigator, Chief</li>
+        </ul></div>
+      </div>
+      <div class="job-meta"><span class="badge badge-green">EMT Required</span><span class="badge badge-gold">Pension + 24hr Shifts</span><span class="badge badge-blue">Veteran Preference</span><span class="badge badge-red">Highly Competitive</span></div>
+    </div>
+  </div>
+
   <div class="card card-navy" style="margin-top:10px">
     <h2>A Note on These Careers</h2>
     <p>Every one of these jobs represents a genuine, sustainable income path — not a consolation prize for people who "didn't go to college." The tradespeople, healthcare workers, inspectors, and licensed professionals on this list are essential to how society functions. Many of them out-earn their college-educated counterparts by year 5. The best question to ask isn't <em>is this prestigious enough</em> — it's <em>does this path align with how I want to spend my days and what I want my life to look like?</em></p>
@@ -3089,6 +3732,8 @@ ul.styled-list li::before {
 </div>
 </div>
 
+</main>
+
 <script>
 function toggleJob(header) {
   const body = header.nextElementSibling;
@@ -3101,13 +3746,80 @@ function toggleJob(header) {
     header.classList.add('open');
   }
 }
+
+// ===== QUICK CAREERS FILTER / SORT =====
+function toggleFilter(btn) { btn.classList.toggle('active'); }
+
+function applyJobFilters() {
+  var panel = document.getElementById('quickcareers-panel');
+  if (!panel) return;
+  var cards = Array.prototype.slice.call(panel.querySelectorAll('.job-card'));
+  var wantNoDegree = document.getElementById('ftNoDegree').classList.contains('active');
+  var wantGiBill   = document.getElementById('ftGiBill').classList.contains('active');
+  var wantFast     = document.getElementById('ftFast').classList.contains('active');
+  var sort = document.getElementById('sortJobs').value;
+
+  var visible = 0;
+  cards.forEach(function(card) {
+    var ok = true;
+    if (wantNoDegree && card.getAttribute('data-nodegree') !== 'true') ok = false;
+    if (wantGiBill   && card.getAttribute('data-gibill')   !== 'true') ok = false;
+    if (wantFast     && parseInt(card.getAttribute('data-months') || '99', 10) > 6) ok = false;
+    card.classList.toggle('filtered-out', !ok);
+    if (ok) visible++;
+  });
+
+  // Sorting: reorder the visible cards within their container
+  var container = cards.length ? cards[0].parentNode : null;
+  if (container && sort !== 'default') {
+    var sorted = cards.slice().sort(function(a, b) {
+      if (sort === 'salary-desc') return (+b.dataset.salary) - (+a.dataset.salary);
+      if (sort === 'salary-asc')  return (+a.dataset.salary) - (+b.dataset.salary);
+      if (sort === 'time-asc')    return (+a.dataset.months) - (+b.dataset.months);
+      if (sort === 'alpha') {
+        var an = a.querySelector('.job-title').textContent.trim().toLowerCase();
+        var bn = b.querySelector('.job-title').textContent.trim().toLowerCase();
+        return an < bn ? -1 : an > bn ? 1 : 0;
+      }
+      return 0;
+    });
+    sorted.forEach(function(card) { container.appendChild(card); });
+  } else if (container && sort === 'default') {
+    // Restore original order using the stored index
+    cards.slice().sort(function(a, b) {
+      return (+a.dataset.order) - (+b.dataset.order);
+    }).forEach(function(card) { container.appendChild(card); });
+  }
+
+  var countEl = document.getElementById('filterCount');
+  if (countEl) countEl.textContent = visible + ' of ' + cards.length + ' shown';
+  var emptyEl = document.getElementById('filterEmpty');
+  if (emptyEl) emptyEl.classList.toggle('show', visible === 0);
+}
+
+// Record original order once, on load
+(function initJobOrder() {
+  function setup() {
+    var panel = document.getElementById('quickcareers-panel');
+    if (!panel) return;
+    panel.querySelectorAll('.job-card').forEach(function(card, i) {
+      card.dataset.order = i;
+    });
+    var countEl = document.getElementById('filterCount');
+    var total = panel.querySelectorAll('.job-card').length;
+    if (countEl) countEl.textContent = total + ' of ' + total + ' shown';
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else { setup(); }
+})();
 </script>
 
 <script>
 // ===== TAB SWITCHING =====
 function showTab(id) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
   var panel = document.getElementById(id + '-panel');
   if (panel) panel.classList.add('active');
   // Use currentTarget so tapping an emoji inside the button still works;
@@ -3117,10 +3829,41 @@ function showTab(id) {
     : Array.prototype.find.call(document.querySelectorAll('.tab-btn'), function(b){
         return b.getAttribute('onclick') && b.getAttribute('onclick').indexOf("'" + id + "'") !== -1;
       });
-  if (btn) btn.classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected','true');
+    // Bring the active tab fully into view in the scroller
+    if (btn.scrollIntoView) btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+  }
+  updateTabScrollButtons();
   // Scroll content area back to top on tab change
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// ===== TAB SCROLL ARROWS (desktop browser) =====
+function scrollTabs(dir) {
+  var nav = document.getElementById('tabNav');
+  if (nav) nav.scrollBy({ left: dir * 220, behavior: 'smooth' });
+}
+function updateTabScrollButtons() {
+  var nav = document.getElementById('tabNav');
+  var wrap = document.querySelector('.tab-nav-wrap');
+  var left = document.getElementById('tabScrollLeft');
+  var right = document.getElementById('tabScrollRight');
+  if (!nav || !wrap) return;
+  var overflow = nav.scrollWidth > nav.clientWidth + 4;
+  wrap.classList.toggle('scrollable', overflow);
+  if (left)  left.disabled  = nav.scrollLeft <= 2;
+  if (right) right.disabled = nav.scrollLeft >= (nav.scrollWidth - nav.clientWidth - 2);
+}
+window.addEventListener('resize', updateTabScrollButtons);
+window.addEventListener('load', updateTabScrollButtons);
+(function(){
+  var nav = document.getElementById('tabNav');
+  if (nav) nav.addEventListener('scroll', updateTabScrollButtons);
+  // Initial check after layout
+  setTimeout(updateTabScrollButtons, 100);
+})();
 
 // ===== FAQ TOGGLE =====
 function toggleFaq(el) {
@@ -3128,9 +3871,10 @@ function toggleFaq(el) {
   const allAnswers = document.querySelectorAll('.faq-a');
   const allQs = document.querySelectorAll('.faq-q');
   allAnswers.forEach(a => { if (a !== answer) { a.classList.remove('open'); } });
-  allQs.forEach(q => { if (q !== el) q.classList.remove('open'); });
+  allQs.forEach(q => { if (q !== el) { q.classList.remove('open'); q.setAttribute('aria-expanded','false'); } });
   answer.classList.toggle('open');
   el.classList.toggle('open');
+  el.setAttribute('aria-expanded', el.classList.contains('open') ? 'true' : 'false');
 }
 
 // ===== THEME TOGGLE (LIGHT / DARK) =====
@@ -3138,6 +3882,8 @@ function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   const label = document.querySelector('.theme-label');
   if (label) label.textContent = (theme === 'dark') ? 'Light' : 'Dark';
+  const tog = document.getElementById('themeToggle');
+  if (tog) tog.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
 }
 function toggleTheme() {
   const current = document.documentElement.getAttribute('data-theme') || 'light';
